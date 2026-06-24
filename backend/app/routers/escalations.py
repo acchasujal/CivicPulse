@@ -4,6 +4,7 @@ from pydantic import BaseModel, field_validator
 from app.models.escalation import Escalation
 from app.models.action_draft import ActionDraft
 from app.db import get_session
+from app.services.agent_5_escalation import escalate_draft
 from sqlmodel import Session
 from datetime import datetime
 
@@ -60,30 +61,26 @@ async def create_escalation(
                 detail={"error": "validation_error", "fields": {"recipient": "Valid email recipient is required for email method"}}
             )
             
-    # Return placeholder escalation
-    now_str = datetime.utcnow().isoformat() + "Z"
-    if payload.method == "email":
-        return EscalationResponse(
-            id="placeholder-escalation-uuid",
-            draft_id=payload.draft_id,
-            method="email",
-            recipient=payload.recipient,
-            status="sent",
-            provider_response="250 OK",
-            sent_at=now_str,
-            created_at=now_str
-        )
-    else:
-        return EscalationResponse(
-            id="placeholder-escalation-uuid",
-            draft_id=payload.draft_id,
-            method="pdf_export",
-            status="exported",
-            provider_response="PDF generated successfully",
-            sent_at=now_str,
-            created_at=now_str,
-            pdf_download_url="/api/static/downloads/placeholder.pdf"
-        )
+    escalation = await escalate_draft(
+        draft_id=payload.draft_id,
+        method=payload.method,
+        recipient=payload.recipient,
+        session=session
+    )
+
+    pdf_url = f"/api/static/downloads/{escalation.id}.pdf" if (escalation.method == "pdf_export" or escalation.status == "exported") else None
+
+    return EscalationResponse(
+        id=escalation.id,
+        draft_id=escalation.draft_id,
+        method=escalation.method,
+        recipient=escalation.recipient,
+        status=escalation.status,
+        provider_response=escalation.provider_response,
+        sent_at=escalation.sent_at,
+        created_at=escalation.created_at,
+        pdf_download_url=pdf_url
+    )
 
 @router.get("/{id}", response_model=EscalationResponse)
 async def get_escalation(
@@ -94,6 +91,8 @@ async def get_escalation(
     if not escalation:
         raise HTTPException(status_code=404, detail="Escalation not found")
     
+    pdf_url = f"/api/static/downloads/{escalation.id}.pdf" if (escalation.method == "pdf_export" or escalation.status == "exported") else None
+
     # Map to response model
     return EscalationResponse(
         id=escalation.id,
@@ -104,5 +103,5 @@ async def get_escalation(
         provider_response=escalation.provider_response,
         sent_at=escalation.sent_at,
         created_at=escalation.created_at,
-        pdf_download_url="/api/static/downloads/placeholder.pdf" if escalation.method == "pdf_export" else None
+        pdf_download_url=pdf_url
     )
