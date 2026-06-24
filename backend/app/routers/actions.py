@@ -5,8 +5,12 @@ from app.models.action_draft import ActionDraft
 from app.models.cluster import Cluster
 from app.models.impact_summary import ImpactSummary
 from app.db import get_session
+from app.services.agent_4_action_generator import generate_action_drafts
 from sqlmodel import Session, select
 from datetime import datetime
+import logging
+
+logger = logging.getLogger("civicpulse")
 
 router = APIRouter(tags=["actions"])
 
@@ -44,28 +48,22 @@ async def generate_drafts(
             detail={"error": "no_impact_summary_yet", "message": "No impact summary yet — generate that first"}
         )
     
-    # Return placeholder drafts (complaint, rti, community_summary)
-    placeholder_drafts = [
-        ActionDraft(
-            cluster_id=id,
-            draft_type="complaint",
-            content="Placeholder complaint content",
-            status="pending_review"
-        ),
-        ActionDraft(
-            cluster_id=id,
-            draft_type="rti",
-            content="AI-generated draft. Review before submission.\nPlaceholder RTI content",
-            status="pending_review"
-        ),
-        ActionDraft(
-            cluster_id=id,
-            draft_type="community_summary",
-            content="Placeholder community summary content",
-            status="pending_review"
+    try:
+        drafts = await generate_action_drafts(cluster_id=id, session=session)
+        return GenerateDraftsResponse(drafts=drafts)
+    except HTTPException as he:
+        raise he
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"error": "no_impact_summary_yet", "message": str(ve)}
         )
-    ]
-    return GenerateDraftsResponse(drafts=placeholder_drafts)
+    except Exception as e:
+        logger.error(f"manual_generate_drafts_failed | cluster_id={id} | error={str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={"error": "ai_unavailable", "retryable": True}
+        )
 
 @router.patch("/action-drafts/{id}", response_model=ActionDraft, status_code=status.HTTP_200_OK)
 async def update_draft_status(
