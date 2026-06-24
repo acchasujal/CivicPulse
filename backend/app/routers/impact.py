@@ -2,8 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.models.impact_summary import ImpactSummary
 from app.models.cluster import Cluster
 from app.db import get_session
+from app.services.agent_3_impact import analyze_cluster_impact
 from sqlmodel import Session
-from datetime import datetime
+import logging
+
+logger = logging.getLogger("civicpulse")
 
 router = APIRouter(prefix="/clusters/{id}/impact", tags=["impact"])
 
@@ -20,13 +23,15 @@ async def trigger_impact(
             detail="Cluster not found"
         )
     
-    # Return placeholder ImpactSummary
-    placeholder_summary = ImpactSummary(
-        cluster_id=id,
-        affected_area_description="Placeholder affected area",
-        potential_consequences="Placeholder consequences",
-        risk_level="moderate",
-        evidence_count=cluster.report_count,
-        generated_at=datetime.utcnow().isoformat() + "Z"
-    )
-    return placeholder_summary
+    try:
+        summary = await analyze_cluster_impact(cluster_id=id, session=session)
+        return summary
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"manual_trigger_impact_failed | cluster_id={id} | error={str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={"error": "ai_unavailable", "retryable": True}
+        )
+
