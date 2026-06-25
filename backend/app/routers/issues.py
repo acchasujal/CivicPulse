@@ -34,11 +34,14 @@ class ImpactSummarySummary(BaseModel):
     evidence_count: int
     potential_consequences: str
 
+from app.routers.escalations import EscalationResponse
+
 class ActionDraftSummary(BaseModel):
     id: str
     draft_type: str
     status: str
     content: str
+    escalation: Optional[EscalationResponse] = None
 
 class IssueDetailResponse(BaseModel):
     issue: Issue
@@ -210,12 +213,33 @@ async def get_issue(
                 select(ActionDraft).where(ActionDraft.cluster_id == cluster.id)
             ).all()
             for draft in drafts:
+                from app.models.escalation import Escalation
+                escalation = session.exec(
+                    select(Escalation).where(Escalation.draft_id == draft.id)
+                ).first()
+                
+                esc_response = None
+                if escalation:
+                    pdf_url = f"/api/static/downloads/{escalation.id}.pdf" if (escalation.method == "pdf_export" or escalation.status == "exported") else None
+                    esc_response = EscalationResponse(
+                        id=escalation.id,
+                        draft_id=escalation.draft_id,
+                        method=escalation.method,
+                        recipient=escalation.recipient,
+                        status=escalation.status,
+                        provider_response=escalation.provider_response,
+                        sent_at=escalation.sent_at,
+                        created_at=escalation.created_at,
+                        pdf_download_url=pdf_url
+                    )
+                
                 action_draft_summaries.append(
                     ActionDraftSummary(
                         id=draft.id,
                         draft_type=draft.draft_type,
                         status=draft.status,
-                        content=draft.content
+                        content=draft.content,
+                        escalation=esc_response
                     )
                 )
 

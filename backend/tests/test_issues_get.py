@@ -75,10 +75,22 @@ def test_get_issue_detail_includes_extended_fields():
             cluster_id=cluster.id,
             draft_type="complaint",
             content="To the municipal commissioner, I wish to register a formal complaint regarding...",
-            status="pending_review"
+            status="approved"
         )
         session.add(draft)
-        
+        session.commit()
+        session.refresh(draft)
+
+        from app.models.escalation import Escalation
+        escalation = Escalation(
+            draft_id=draft.id,
+            method="email",
+            recipient="ward.office@example.gov",
+            status="sent",
+            provider_response="250 OK Message accepted",
+            sent_at="2026-06-25T11:00:00Z"
+        )
+        session.add(escalation)
         session.commit()
         
         issue_id = issue.id
@@ -104,5 +116,13 @@ def test_get_issue_detail_includes_extended_fields():
     # 3. Verify extended ActionDraftSummary fields
     assert len(data["action_drafts"]) == 1
     assert data["action_drafts"][0]["draft_type"] == "complaint"
-    assert data["action_drafts"][0]["status"] == "pending_review"
+    assert data["action_drafts"][0]["status"] == "approved"
     assert data["action_drafts"][0]["content"] == expected_draft_content
+    
+    # 4. Verify nested escalation fields
+    assert data["action_drafts"][0]["escalation"] is not None
+    assert data["action_drafts"][0]["escalation"]["method"] == "email"
+    assert data["action_drafts"][0]["escalation"]["recipient"] == "ward.office@example.gov"
+    assert data["action_drafts"][0]["escalation"]["status"] == "sent"
+    assert data["action_drafts"][0]["escalation"]["provider_response"] == "250 OK Message accepted"
+
