@@ -38,6 +38,7 @@ export const IssueDetailPage: React.FC = () => {
   const [approvalDraftId, setApprovalDraftId] = useState<string | null>(null);
   const [escalateDraftId, setEscalateDraftId] = useState<string | null>(null);
   const [escalateMethod, setEscalateMethod] = useState<'email' | 'pdf_export'>('email');
+  const [toast, setToast] = useState<string | null>(null);
 
   if (isLoading) {
     return <LoadingState variant="page" message="Retrieving report details..." />;
@@ -66,17 +67,9 @@ export const IssueDetailPage: React.FC = () => {
     setApprovalDraftId(draftId);
   };
 
-  const handleApproveConfirm = async () => {
-    if (!approvalDraftId) return;
-    try {
-      await approveDraftMutation.mutateAsync({
-        draftId: approvalDraftId,
-        status: 'approved',
-      });
-      setApprovalDraftId(null);
-    } catch (e) {
-      // Handled via mutation state or global alert
-    }
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleRejectClick = async (draftId: string) => {
@@ -282,12 +275,21 @@ export const IssueDetailPage: React.FC = () => {
         <ApprovalModal
           isOpen={!!approvalDraftId}
           onClose={() => setApprovalDraftId(null)}
-          onConfirm={handleApproveConfirm}
+          draftId={approvalDraftId}
+          issueId={issueId}
           reportCount={cluster?.report_count || 1}
           areaLabel={cluster?.area_label || 'Designated Area'}
           recipientEmail="ward.office@example.gov" // Default recipient email matching spec
-          isSubmitting={approveDraftMutation.isPending}
+          draftType={action_drafts.find(d => d.id === approvalDraftId)?.draft_type || 'complaint'}
+          onSuccess={showToast}
         />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-medium shadow-premium text-xs font-semibold animate-fade font-sans select-none">
+          <span>{toast}</span>
+        </div>
       )}
 
       {escalateDraftId && (
