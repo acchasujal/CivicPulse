@@ -49,7 +49,7 @@ async def generate_drafts(
         )
     
     try:
-        drafts = await generate_action_drafts(cluster_id=id, session=session)
+        drafts = await generate_action_drafts(cluster_id=id, session=session, force_regenerate=True)
         return GenerateDraftsResponse(drafts=drafts)
     except HTTPException as he:
         raise he

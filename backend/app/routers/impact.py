@@ -24,7 +24,7 @@ async def trigger_impact(
         )
     
     try:
-        summary = await analyze_cluster_impact(cluster_id=id, session=session)
+        summary = await analyze_cluster_impact(cluster_id=id, session=session, force_regenerate=True)
         return summary
     except HTTPException as he:
         raise he

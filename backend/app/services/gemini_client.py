@@ -116,9 +116,34 @@ class GeminiClient:
 def settings_key() -> Optional[str]:
     try:
         from app.config import settings
-        return settings.GEMINI_API_KEY
-    except ImportError:
-        return os.environ.get("GEMINI_API_KEY")
+        if settings.GEMINI_API_KEY:
+            return settings.GEMINI_API_KEY
+    except Exception:
+        pass
+
+    val = os.environ.get("GEMINI_API_KEY")
+    if val:
+        return val
+
+    # Fallback to GEMINI_API_KEYS (plural, comma-separated)
+    keys_val = os.environ.get("GEMINI_API_KEYS")
+    if not keys_val:
+        try:
+            if os.path.exists(".env"):
+                with open(".env", "r") as f:
+                    for line in f:
+                        if line.strip().startswith("GEMINI_API_KEYS="):
+                            keys_val = line.strip().split("=", 1)[1].strip()
+                            break
+        except Exception:
+            pass
+
+    if keys_val:
+        keys = [k.strip() for k in keys_val.split(",") if k.strip()]
+        if keys:
+            return keys[0]
+
+    return None
 
 def settings_model() -> str:
     try:
