@@ -39,26 +39,11 @@ This folder contains the files and configuration necessary to deploy the entire 
    gcloud artifacts repositories create civicpulse-repo --repository-format=docker --location=us-central1
    ```
 
-4. Build and submit the container:
+4. Build, Push, and Deploy with Cloud Build:
    ```bash
-   gcloud builds submit --tag us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/civicpulse-repo/civicpulse:latest
+   gcloud builds submit --config=cloudbuild.yaml --substitutions=_SENDGRID_FROM_EMAIL="[YOUR_EMAIL]"
    ```
 
-5. Deploy to Cloud Run:
-   ```bash
-   gcloud run deploy civicpulse \
-     --image us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/civicpulse-repo/civicpulse:latest \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --max-instances 1 \
-     --concurrency 1 \
-     --set-secrets="GEMINI_API_KEY=gemini-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest" \
-     --set-env-vars="SENDGRID_FROM_EMAIL=[YOUR_EMAIL],LOG_LEVEL=info" \
-     --startup-probe-type=http \
-     --startup-probe-path=/health \
-     --startup-probe-failure-threshold=10
-   ```
 
 6. Once deployment is complete, fetch the URL and set `APP_BASE_URL`:
    ```bash

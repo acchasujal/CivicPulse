@@ -73,32 +73,22 @@ gcloud artifacts repositories create civicpulse-repo \
   --description="CivicPulse Production Repository"
 ```
 
-### Step 3.4: Build the Container Image
-Run Cloud Build to compile React assets, package Python dependencies, and build the Docker image:
+### Step 3.4: Build, Push, and Deploy with Cloud Build
+Run Cloud Build to compile React assets, package Python dependencies, build the Docker image, push it to Artifact Registry, and deploy to Cloud Run automatically:
 ```bash
-gcloud builds submit --tag us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/civicpulse-repo/civicpulse:latest
+gcloud builds submit --config=cloudbuild.yaml \
+  --substitutions=_SENDGRID_FROM_EMAIL="[YOUR_EMAIL]"
 ```
 
-### Step 3.5: Deploy to Cloud Run with Startup Probes and Secrets
-Deploy the container. We specify `max-instances=1` and `concurrency=1` to guarantee SQLite safety under the Free Tier, mount the secrets, and specify the health probe:
-```bash
-gcloud run deploy civicpulse \
-  --image us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/civicpulse-repo/civicpulse:latest \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --cpu 1 \
-  --memory 512Mi \
-  --min-instances 0 \
-  --max-instances 1 \
-  --concurrency 1 \
-  --timeout 300 \
-  --set-secrets="GEMINI_API_KEY=gemini-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest" \
-  --set-env-vars="SENDGRID_FROM_EMAIL=[YOUR_EMAIL],LOG_LEVEL=info" \
-  --startup-probe-type=http \
-  --startup-probe-path=/health \
-  --startup-probe-failure-threshold=10
-```
+*Note: You can also customize other variables by appending them to `--substitutions`, e.g., `_LOCATION="us-east1",_SERVICE_NAME="civicpulse-staging"`.*
+
+### Step 3.5: Automate CD with GitHub Trigger (Optional)
+To set up continuous deployment:
+1. Connect your GitHub repository to Google Cloud Build.
+2. Create a Trigger referencing the `main` branch.
+3. Select `Cloud Build configuration file (yaml or json)` and point it to `cloudbuild.yaml`.
+4. Add user-defined substitutions for `_SENDGRID_FROM_EMAIL` within the Trigger settings.
+
 
 ### Step 3.6: Configure the Service URL (Post-Deployment)
 Once deployed, retrieve the generated service URL:

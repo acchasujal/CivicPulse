@@ -1,0 +1,116 @@
+# Production-ready Cloud Build Configuration for CivicPulse
+# Serves as the single source of truth for the CI/CD pipeline.
+#
+# GCP Best Practices Implemented:
+# 1. Multi-tagging (Commit SHA for traceability, 'latest' for convenience).
+# 2. Substitution variables for location, repository, service name, and configurations.
+# 3. Secure deployment using Secret Manager integration.
+# 4. SQLite safe-concurrency settings (--max-instances=1, --concurrency=1).
+# 5. Native startup health probes.
+# 6. Structured build steps with clear IDs and caching opportunities.
+
+steps:
+  # =========================================================================
+  # OPTIONAL / EXTENSIBILITY: Linting, Unit Testing & Security Scanning
+  # To enable these in your CI/CD, uncomment the steps below.
+  # =========================================================================
+  
+  # Step 0.a: Run Frontend Lint/Tests (Example)
+  # - name: 'node:20-alpine'
+  #   entrypoint: 'npm'
+  #   args: ['run', 'test']
+  #   dir: 'frontend'
+  #   id: 'Frontend-Tests'
+
+  # Step 0.b: Run Backend Lint/Tests (Example)
+  # - name: 'python:3.12-slim'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       pip install -r requirements.txt pytest
+  #       pytest
+  #   dir: 'backend'
+  #   id: 'Backend-Tests'
+
+  # Step 0.c: Security Vulnerability Scanning (Example using Trivy)
+  # - name: 'aquasec/trivy:latest'
+  #   args: ['image', '--severity', 'HIGH,CRITICAL', '--exit-code', '1', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}']
+  #   id: 'Security-Scan'
+  #   # Note: This step should run after 'Build' but before 'Push' and 'Deploy'
+
+  # =========================================================================
+  # CORE PIPELINE: Build, Push, and Deploy
+  # =========================================================================
+
+  # Step 1: Build the multi-stage Docker image
+  # Uses both the commit SHA and 'latest' tags for traceability and rollback support.
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      - '-t'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:latest'
+      - '.'
+    id: 'Build'
+
+  # Step 2: Push the image tags to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}'
+    id: 'Push'
+
+  # Step 3: Deploy to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      - '--region'
+      - '${_LOCATION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '1' # SQLite Safety: Prevent multi-instance split-brain database states
+      - '--concurrency'
+      - '1' # SQLite Safety: Process requests sequentially to avoid locks
+      - '--timeout'
+      - '300'
+      # Mount production secrets securely from Secret Manager
+      - '--set-secrets'
+      - 'GEMINI_API_KEY=gemini-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest'
+      # Set production environment variables
+      - '--set-env-vars'
+      - 'SENDGRID_FROM_EMAIL=${_SENDGRID_FROM_EMAIL},LOG_LEVEL=${_LOG_LEVEL}'
+      # Configure health probe for container readiness
+      - '--startup-probe-type=http'
+      - '--startup-probe-path=/health'
+      - '--startup-probe-failure-threshold=10'
+    id: 'Deploy'
+
+# Images produced by this build pipeline to be registered in the build tracking
+images:
+  - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+  - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:latest'
+
+# Default values for substitution variables.
+# These can be overridden in the Cloud Build Trigger or via the gcloud CLI.
+substitutions:
+  _LOCATION: 'us-central1'
+  _REPOSITORY: 'civicpulse-repo'
+  _IMAGE_NAME: 'civicpulse'
+  _SERVICE_NAME: 'civicpulse'
+  _SENDGRID_FROM_EMAIL: 'noreply@civicpulse.org'
+  _LOG_LEVEL: 'info'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
