@@ -85,9 +85,7 @@ steps:
       - '1' # SQLite Safety: Process requests sequentially to avoid locks
       - '--timeout'
       - '300'
-      # Mount production secrets securely from Secret Manager
-      - '--set-secrets'
-      - 'GEMINI_API_KEY=gemini-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest'
+      - '--set-secrets="GEMINI_API_KEYS=gemini-api-keys:latest,SENDGRID_API_KEY=sendgrid-api-key:latest"'
       # Set production environment variables
       - '--set-env-vars'
       - 'SENDGRID_FROM_EMAIL=${_SENDGRID_FROM_EMAIL},LOG_LEVEL=${_LOG_LEVEL}'
