@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Map, Plus, Filter, Users, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { LoadingState } from '@/components/feedback/LoadingState';
 import { ErrorState } from '@/components/feedback/ErrorState';
@@ -11,8 +12,33 @@ import { cn } from '@/lib/utils';
 
 export const TrackerPage: React.FC = () => {
   const { data, isLoading, error, refetch } = useIssues();
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read URL search params for stateful filter state
+  const selectedType = searchParams.get('type') || 'all';
+  const selectedRisk = searchParams.get('risk') || 'all';
+  const selectedIssueId = searchParams.get('selected') || null;
+
+  const setSelectedType = (type: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (type === 'all') params.delete('type');
+    else params.set('type', type);
+    setSearchParams(params);
+  };
+
+  const setSelectedRisk = (risk: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (risk === 'all') params.delete('risk');
+    else params.set('risk', risk);
+    setSearchParams(params);
+  };
+
+  const setSelectedIssueId = (issueId: string | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (!issueId) params.delete('selected');
+    else params.set('selected', issueId);
+    setSearchParams(params);
+  };
 
   // Auto-scroll selected card into view
   useEffect(() => {
@@ -68,15 +94,26 @@ export const TrackerPage: React.FC = () => {
 
   const { issues, stats, clusterCounts } = processedData;
 
-  // Filter issues client-side
+  // Filter issues client-side based on Category and Risk
   const filteredIssues = issues.filter((issue) => {
-    if (selectedType === 'all') return true;
-    return issue.issue_type === selectedType;
+    const typeMatch = selectedType === 'all' || issue.issue_type === selectedType;
+    
+    let riskMatch = true;
+    if (selectedRisk === 'high') riskMatch = issue.severity >= 4;
+    else if (selectedRisk === 'moderate') riskMatch = issue.severity === 3;
+    else if (selectedRisk === 'low') riskMatch = issue.severity <= 2;
+    
+    return typeMatch && riskMatch;
   });
+
+  const clearAllFilters = () => {
+    const params = new URLSearchParams();
+    setSearchParams(params);
+  };
 
   return (
     <div className="flex-1 flex flex-col pb-12 font-sans">
-      {/* Landing Experience Redesign: 15-second value proposition header */}
+      {/* Landing Experience: 15-second value proposition header */}
       <div className="bg-slate-900 text-white rounded-medium p-6 md:p-8 mt-6 shadow-premium relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-teal-950/20 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-3xl space-y-3">
@@ -86,8 +123,8 @@ export const TrackerPage: React.FC = () => {
           <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight leading-tight">
             CivicPulse Operations Center
           </h2>
-          <p className="text-xs md:text-sm text-slate-350 font-normal leading-relaxed">
-            Every citizen report containing photographic evidence is processed through an automated verification pipeline. The system clusters duplicates, assesses neighborhood safety risk, and draft reviewable, sendable legal briefs for official action.
+          <p className="text-xs md:text-sm text-slate-355 font-normal leading-relaxed">
+            Every citizen report containing photographic evidence is processed through an automated verification pipeline. The system clusters duplicates, assesses neighborhood safety risk, and drafts reviewable, sendable legal briefs for official action.
           </p>
           <div className="pt-2 flex flex-wrap gap-3">
             <Link
@@ -153,22 +190,38 @@ export const TrackerPage: React.FC = () => {
 
       {/* Filter Toolbar */}
       <div id="active-cases" className="mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200 select-none">
-        <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold font-sans">
-          <Filter size={14} className="text-slate-450" />
-          <span>Filter by Class:</span>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="bg-white border border-slate-250 rounded-small px-3 py-1.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-primary transition-colors shadow-sm cursor-pointer"
-          >
-            <option value="all">All Issues</option>
-            <option value="road_damage">Road Damage</option>
-            <option value="street_lighting">Street Lighting</option>
-            <option value="garbage">Garbage Overflow</option>
-            <option value="water">Water Leakage</option>
-            <option value="footpath">Broken Footpath</option>
-            <option value="dumping">Illegal Dumping</option>
-          </select>
+        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 font-sans">
+          <div className="flex items-center gap-1.5">
+            <Filter size={14} className="text-slate-450" />
+            <span>Category:</span>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="bg-white border border-slate-250 rounded-small px-3 py-1.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-primary transition-colors shadow-sm cursor-pointer"
+            >
+              <option value="all">All Categories</option>
+              <option value="road_damage">Road Damage</option>
+              <option value="street_lighting">Street Lighting</option>
+              <option value="garbage">Garbage Overflow</option>
+              <option value="water">Water Leakage</option>
+              <option value="footpath">Broken Footpath</option>
+              <option value="dumping">Illegal Dumping</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span>Risk Level:</span>
+            <select
+              value={selectedRisk}
+              onChange={(e) => setSelectedRisk(e.target.value)}
+              className="bg-white border border-slate-250 rounded-small px-3 py-1.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-primary transition-colors shadow-sm cursor-pointer"
+            >
+              <option value="all">All Risks</option>
+              <option value="high">Critical & High (Sev 4-5)</option>
+              <option value="moderate">Moderate (Sev 3)</option>
+              <option value="low">Low (Sev 1-2)</option>
+            </select>
+          </div>
         </div>
         
         <div className="text-[10px] font-bold text-slate-450 uppercase tracking-widest font-sans">
@@ -176,11 +229,11 @@ export const TrackerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Map & List Split Layout Container */}
+      {/* Map & List Split Layout Container: 65% Map First Visual Priority */}
       <div className="py-6 flex-1 flex flex-col lg:flex-row gap-6">
-        {/* Map Visualization (Left Column on Desktop, Top on Mobile) */}
+        {/* Map Visualization (Left Column - Prioritized) */}
         {!isLoading && filteredIssues.length > 0 && (
-          <div className="w-full lg:w-[55%] h-[350px] lg:h-[600px] shrink-0 rounded-medium overflow-hidden border border-slate-200/80 shadow-subtle bg-white relative">
+          <div className="w-full lg:w-[65%] h-[380px] lg:h-[600px] shrink-0 rounded-medium overflow-hidden border border-slate-200/80 shadow-subtle bg-white relative">
             <IssueMap
               issues={filteredIssues}
               selectedIssueId={selectedIssueId}
@@ -190,26 +243,26 @@ export const TrackerPage: React.FC = () => {
           </div>
         )}
 
-        {/* List of Cards (Right Column on Desktop, Bottom on Mobile) */}
+        {/* List of Cards (Right Column - Dynamic Flex-1 takes remaining 35%) */}
         <div className="flex-1 flex flex-col max-h-[600px] lg:overflow-y-auto pr-0 lg:pr-2 scrollbar-thin">
           {isLoading ? (
             <LoadingState variant="tracker-card" count={4} />
           ) : filteredIssues.length === 0 ? (
             <EmptyState
               icon={Map}
-              title={selectedType !== 'all' ? "No matching reports" : "No reports registered"}
+              title={selectedType !== 'all' || selectedRisk !== 'all' ? "No matching reports" : "No reports registered"}
               description={
-                selectedType !== 'all'
-                  ? "No community reports of this specific category have been logged yet. Clear the filter to view all active civic issues."
+                selectedType !== 'all' || selectedRisk !== 'all'
+                  ? "No community reports of this specific category and risk level have been logged yet. Reset active filters to view other reports."
                   : "The public tracker is currently empty. Submit a new report with photo evidence to trigger the automated verification pipeline."
               }
               action={
-                selectedType !== 'all' ? (
+                selectedType !== 'all' || selectedRisk !== 'all' ? (
                   <button
-                    onClick={() => setSelectedType('all')}
+                    onClick={clearAllFilters}
                     className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
                   >
-                    Clear filter
+                    Reset Filters
                   </button>
                 ) : (
                   <Link
@@ -222,15 +275,17 @@ export const TrackerPage: React.FC = () => {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 animate-fade">
-              {filteredIssues.map((issue) => {
-                // reportsCount is issues with the same cluster_id, or 1 if unclustered
+            <div className="grid grid-cols-1 gap-4">
+              {filteredIssues.map((issue, index) => {
                 const reportsCount = issue.cluster_id ? (clusterCounts[issue.cluster_id] || 1) : 1;
                 const isSelected = selectedIssueId === issue.id;
                 return (
-                  <div
+                  <motion.div
                     key={issue.id}
                     id={`issue-card-${issue.id}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.4) }}
                     onClick={() => setSelectedIssueId(issue.id)}
                     className={cn(
                       "transition-all duration-300 rounded-medium cursor-pointer",
@@ -241,7 +296,7 @@ export const TrackerPage: React.FC = () => {
                       issue={issue}
                       reportsCount={reportsCount}
                     />
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

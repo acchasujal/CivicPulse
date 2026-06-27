@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PhotoUploader } from '@/components/issue/PhotoUploader';
 import { PhotoPreview } from '@/components/issue/PhotoPreview';
@@ -26,6 +27,7 @@ export const IntakePage: React.FC = () => {
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [userNote, setUserNote] = useState<string>('');
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null);
 
   // Field validation errors
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -155,12 +157,11 @@ export const IntakePage: React.FC = () => {
         user_note: userNote.trim() || undefined,
       });
 
-      // Navigate to details page on successful creation
-      // Add a slight delay so the user sees the completed states
-      setTimeout(() => {
-        setIsSubmitting(false);
-        navigate(`/issue/${response.id}`);
-      }, 1000);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setIsSubmitting(false);
+      setSubmittedIssueId(response.id);
 
     } catch (err) {
       setIsSubmitting(false);
@@ -207,6 +208,91 @@ export const IntakePage: React.FC = () => {
     { number: 2, label: 'Location Lock' },
     { number: 3, label: 'Case Context' },
   ];
+
+  if (submittedIssueId) {
+    return (
+      <div className="max-w-2xl mx-auto w-full py-12 px-4 flex flex-col items-center justify-center font-sans">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="w-full border border-slate-200 bg-white rounded-medium p-8 shadow-subtle flex flex-col items-center space-y-6"
+        >
+          {/* Header check icon */}
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-250 mb-2 shadow-sm animate-fade">
+            <CheckCircle2 size={36} className="stroke-[1.5]" />
+          </div>
+          
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight font-sans">
+              Your Report Mattered!
+            </h2>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+              CivicPulse has verified your evidence and initiated the automated community resolution workflow.
+            </p>
+          </div>
+
+          {/* AI Workflow Milestones Checklist */}
+          <div className="w-full bg-slate-50 rounded-small border border-slate-200/60 p-5 space-y-4 text-xs text-slate-700">
+            <h3 className="font-bold text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-200 pb-2 select-none">
+              AI Pipeline Progress Check
+            </h3>
+            
+            <div className="space-y-3.5">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold block leading-tight">Original Evidence Secured</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Photo and metadata logged onto the secure ledger.</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold block leading-tight">AI Analysis Completed</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Gemini Vision validated categorisation and credibility score.</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold block leading-tight">Spatial Deduplication Check</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Agent 2 cross-referenced location with nearby incident clusters.</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold block leading-tight">Escalation Briefs Generated</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Action Generator compiled formal RTI and municipal complaints.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
+            <button
+              onClick={() => navigate(`/issue/${submittedIssueId}`)}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-small shadow transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <span>Track Report</span>
+              <ArrowRight size={13} />
+            </button>
+            <button
+              onClick={() => navigate('/tracker')}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-slate-250 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-small shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <span>View Public Tracker</span>
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col pb-10 font-sans">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck, Loader2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EvidenceCard } from '@/components/issue/EvidenceCard';
 import { ClusterCard } from '@/components/issue/ClusterCard';
@@ -182,9 +182,13 @@ export const IssueDetailPage: React.FC = () => {
             </div>
             
             {isLoading || !issue ? (
-              <div className="h-80 md:h-[400px] border border-slate-200 bg-white rounded-medium overflow-hidden shadow-subtle flex flex-col items-center justify-center animate-pulse p-6">
-                <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-                <span className="text-xs text-slate-400">Loading visual evidence...</span>
+              <div className="border border-slate-200 bg-white rounded-medium overflow-hidden shadow-subtle p-6 animate-pulse space-y-4">
+                <div className="aspect-[16/9] md:aspect-[21/9] bg-slate-100 rounded w-full" />
+                <div className="space-y-3 pt-2">
+                  <div className="h-4 bg-slate-200 rounded w-1/4" />
+                  <div className="h-3 bg-slate-150 rounded w-1/2" />
+                  <div className="h-3 bg-slate-150 rounded w-1/3" />
+                </div>
               </div>
             ) : (
               <EvidenceCard
