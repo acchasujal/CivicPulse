@@ -8,6 +8,8 @@ import { ImpactCard } from '@/components/issue/ImpactCard';
 import { DraftViewer } from '@/components/drafts/DraftViewer';
 import { EscalationCard } from '@/components/escalation/EscalationCard';
 import { AgentTimeline } from '@/components/timeline/AgentTimeline';
+import { AccountabilityTimeline } from '@/components/timeline/AccountabilityTimeline';
+import { AiRecommendations } from '@/components/issue/AiRecommendations';
 import { LoadingState } from '@/components/feedback/LoadingState';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
@@ -160,6 +162,12 @@ export const IssueDetailPage: React.FC = () => {
         }
       />
 
+      {issue && (
+        <div className="max-w-4xl mx-auto w-full px-4 md:px-0 pt-6">
+          <AiRecommendations issue={issue} cluster={cluster} />
+        </div>
+      )}
+
       {/* Narrative Flow Stepper Layout */}
       <div className="max-w-4xl mx-auto w-full py-8 relative pl-8 md:pl-16">
         
@@ -217,25 +225,35 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            <div className="border border-slate-200 bg-white rounded-medium p-6 md:p-8 shadow-subtle">
-              <div className="space-y-1 border-b border-slate-100 pb-4 mb-6 select-none">
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Verification Pipeline Engine
-                </h4>
-                <p className="text-[10px] text-slate-400">
-                  Tracking active agent checks and safety parameter thresholds.
-                </p>
+            <div className="border border-slate-200 bg-white rounded-medium p-6 md:p-8 shadow-subtle space-y-8">
+              {/* Technical Pipeline */}
+              <div className="space-y-4">
+                <div className="space-y-1 border-b border-slate-100 pb-4 select-none">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    AI Agent Processing Pipeline
+                  </h4>
+                  <p className="text-[10px] text-slate-400">
+                    Tracking active agent verification and parameter classification.
+                  </p>
+                </div>
+                {isLoading ? (
+                  <LoadingState variant="timeline" count={5} />
+                ) : (
+                  <AgentTimeline
+                    issue={issue}
+                    cluster={cluster}
+                    impactSummary={impact_summary}
+                    actionDrafts={action_drafts}
+                    layout="responsive"
+                  />
+                )}
               </div>
-              {isLoading ? (
-                <LoadingState variant="timeline" count={5} />
-              ) : (
-                <AgentTimeline
-                  issue={issue}
-                  cluster={cluster}
-                  impactSummary={impact_summary}
-                  actionDrafts={action_drafts}
-                  layout="responsive"
-                />
+              
+              {/* Accountability Timeline */}
+              {issue && (
+                <div className="border-t border-slate-100 pt-6">
+                  <AccountabilityTimeline issue={issue} actionDrafts={action_drafts} />
+                </div>
               )}
             </div>
           </div>
