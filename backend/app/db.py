@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import SQLModel, create_engine, Session, select
 from sqlalchemy import event
 import logging
 
@@ -24,6 +24,18 @@ def init_db():
     from app.models import Cluster, Issue, ImpactSummary, ActionDraft, Escalation
     SQLModel.metadata.create_all(engine)
     logger.info("Database tables initialized successfully.")
+    
+    # Auto-seed database if empty (ensures production never appears empty)
+    with Session(engine) as session:
+        has_issues = session.exec(select(Issue)).first()
+        if not has_issues:
+            logger.info("Database is empty. Auto-seeding production demo records...")
+            try:
+                from app.utils.seeder import seed_data
+                seed_data(session)
+                logger.info("Database auto-seeded successfully.")
+            except Exception as e:
+                logger.error(f"Failed to auto-seed database: {e}")
 
 def get_session():
     with Session(engine) as session:

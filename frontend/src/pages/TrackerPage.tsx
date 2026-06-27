@@ -1,15 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Map, Plus, Filter, Users, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { LoadingState } from '@/components/feedback/LoadingState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { IssueCard } from '@/components/issue/IssueCard';
+import { IssueMap } from '@/components/issue/IssueMap';
 import { useIssues } from '@/api/queries';
+import { cn } from '@/lib/utils';
 
 export const TrackerPage: React.FC = () => {
   const { data, isLoading, error, refetch } = useIssues();
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+
+  // Auto-scroll selected card into view
+  useEffect(() => {
+    if (selectedIssueId) {
+      const element = document.getElementById(`issue-card-${selectedIssueId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, [selectedIssueId]);
 
   // Compute stats and sorting using useMemo to prevent unnecessary recalibration
   const processedData = useMemo(() => {
@@ -163,52 +176,77 @@ export const TrackerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Grid List View / Empty State */}
-      <div className="py-6 flex-1 flex flex-col">
-        {isLoading ? (
-          <LoadingState variant="tracker-card" count={6} />
-        ) : filteredIssues.length === 0 ? (
-          <EmptyState
-            icon={Map}
-            title={selectedType !== 'all' ? "No matching reports" : "No reports registered"}
-            description={
-              selectedType !== 'all'
-                ? "No community reports of this specific category have been logged yet. Clear the filter to view all active civic issues."
-                : "The public tracker is currently empty. Submit a new report with photo evidence to trigger the automated verification pipeline."
-            }
-            action={
-              selectedType !== 'all' ? (
-                <button
-                  onClick={() => setSelectedType('all')}
-                  className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
-                >
-                  Clear filter
-                </button>
-              ) : (
-                <Link
-                  to="/"
-                  className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
-                >
-                  Submit First Report
-                </Link>
-              )
-            }
-          />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade">
-            {filteredIssues.map((issue) => {
-              // reportsCount is issues with the same cluster_id, or 1 if unclustered
-              const reportsCount = issue.cluster_id ? (clusterCounts[issue.cluster_id] || 1) : 1;
-              return (
-                <IssueCard
-                  key={issue.id}
-                  issue={issue}
-                  reportsCount={reportsCount}
-                />
-              );
-            })}
+      {/* Map & List Split Layout Container */}
+      <div className="py-6 flex-1 flex flex-col lg:flex-row gap-6">
+        {/* Map Visualization (Left Column on Desktop, Top on Mobile) */}
+        {!isLoading && filteredIssues.length > 0 && (
+          <div className="w-full lg:w-[55%] h-[350px] lg:h-[600px] shrink-0 rounded-medium overflow-hidden border border-slate-200/80 shadow-subtle bg-white relative">
+            <IssueMap
+              issues={filteredIssues}
+              selectedIssueId={selectedIssueId}
+              onSelectIssue={setSelectedIssueId}
+              className="w-full h-full"
+            />
           </div>
         )}
+
+        {/* List of Cards (Right Column on Desktop, Bottom on Mobile) */}
+        <div className="flex-1 flex flex-col max-h-[600px] lg:overflow-y-auto pr-0 lg:pr-2 scrollbar-thin">
+          {isLoading ? (
+            <LoadingState variant="tracker-card" count={4} />
+          ) : filteredIssues.length === 0 ? (
+            <EmptyState
+              icon={Map}
+              title={selectedType !== 'all' ? "No matching reports" : "No reports registered"}
+              description={
+                selectedType !== 'all'
+                  ? "No community reports of this specific category have been logged yet. Clear the filter to view all active civic issues."
+                  : "The public tracker is currently empty. Submit a new report with photo evidence to trigger the automated verification pipeline."
+              }
+              action={
+                selectedType !== 'all' ? (
+                  <button
+                    onClick={() => setSelectedType('all')}
+                    className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
+                  >
+                    Clear filter
+                  </button>
+                ) : (
+                  <Link
+                    to="/"
+                    className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
+                  >
+                    Submit First Report
+                  </Link>
+                )
+              }
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 animate-fade">
+              {filteredIssues.map((issue) => {
+                // reportsCount is issues with the same cluster_id, or 1 if unclustered
+                const reportsCount = issue.cluster_id ? (clusterCounts[issue.cluster_id] || 1) : 1;
+                const isSelected = selectedIssueId === issue.id;
+                return (
+                  <div
+                    key={issue.id}
+                    id={`issue-card-${issue.id}`}
+                    onClick={() => setSelectedIssueId(issue.id)}
+                    className={cn(
+                      "transition-all duration-300 rounded-medium cursor-pointer",
+                      isSelected && "ring-2 ring-primary border-primary shadow-md scale-[1.01]"
+                    )}
+                  >
+                    <IssueCard
+                      issue={issue}
+                      reportsCount={reportsCount}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
