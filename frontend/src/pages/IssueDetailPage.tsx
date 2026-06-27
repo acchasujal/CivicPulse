@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck, Users } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EvidenceCard } from '@/components/issue/EvidenceCard';
 import { ClusterCard } from '@/components/issue/ClusterCard';
@@ -10,6 +10,8 @@ import { EscalationCard } from '@/components/escalation/EscalationCard';
 import { AgentTimeline } from '@/components/timeline/AgentTimeline';
 import { AccountabilityTimeline } from '@/components/timeline/AccountabilityTimeline';
 import { AiRecommendations } from '@/components/issue/AiRecommendations';
+import { ImpactAnalyticsCard } from '@/components/issue/ImpactAnalyticsCard';
+import { CommunityVerification } from '@/components/issue/CommunityVerification';
 import { LoadingState } from '@/components/feedback/LoadingState';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
@@ -209,6 +211,15 @@ export const IssueDetailPage: React.FC = () => {
               />
             )}
           </div>
+
+          {/* Impact Analytics — real data from issue + cluster + impact_summary */}
+          {issue && (
+            <ImpactAnalyticsCard
+              issue={issue}
+              cluster={cluster}
+              impactSummary={impact_summary}
+            />
+          )}
         </div>
 
         {/* SECTION 2: Automated Verification Pipeline */}
@@ -428,6 +439,26 @@ export const IssueDetailPage: React.FC = () => {
               <div className="border border-slate-200 bg-white rounded-medium p-6 text-center select-none shadow-subtle text-slate-500 text-xs">
                 Authorized documents are queued for SendGrid transmission. Approve briefs to dispatch.
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* SECTION 7: Community Verification */}
+        <div className="relative">
+          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
+            07
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
+              <Users size={15} className="text-primary shrink-0" />
+              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
+                Community Corroboration
+              </h3>
+            </div>
+
+            {issue && (
+              <CommunityVerification issueId={issueId} />
             )}
           </div>
         </div>

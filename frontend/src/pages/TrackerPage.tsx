@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Map, Plus, Filter, Users, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
+import { Map, Plus, Filter, Users, ShieldAlert, Landmark, FileCheck, Clock, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { LoadingState } from '@/components/feedback/LoadingState';
@@ -52,7 +52,11 @@ export const TrackerPage: React.FC = () => {
 
   // Compute stats and sorting using useMemo to prevent unnecessary recalibration
   const processedData = useMemo(() => {
-    if (!data?.issues) return { issues: [], stats: { reports: 0, verified: 0, citizens: 0, notified: 0 }, clusterCounts: {} };
+    if (!data?.issues) return {
+      issues: [],
+      stats: { reports: 0, verified: 0, inProgress: 0, drafted: 0, escalated: 0, citizens: 0 },
+      clusterCounts: {}
+    };
 
     const sortedIssues = [...data.issues].sort((a, b) => {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -61,8 +65,10 @@ export const TrackerPage: React.FC = () => {
     const stats = {
       reports: sortedIssues.length,
       verified: sortedIssues.filter(i => i.credibility_score >= 0.8).length,
+      inProgress: sortedIssues.filter(i => i.status === 'clustered' || i.status === 'classified').length,
+      drafted: sortedIssues.filter(i => i.status === 'drafted' || i.status === 'approved').length,
+      escalated: sortedIssues.filter(i => i.status === 'escalated').length,
       citizens: sortedIssues.length * 25, // Evidence-grounded footprint proxy (25 residents per report area)
-      notified: sortedIssues.filter(i => i.status === 'escalated').length,
     };
 
     const clusterCounts = sortedIssues.reduce((acc, issue) => {
@@ -145,45 +151,36 @@ export const TrackerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Impact-Oriented Stats Overview Dashboard */}
+      {/* Public Transparency Dashboard */}
       {isLoading ? (
         <LoadingState variant="dashboard-stats" className="mt-6" />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-            <div className="flex items-center justify-between text-slate-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Community Reports</span>
-              <Users size={15} className="text-slate-400" />
+        <div className="mt-6 border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 select-none">
+            <div className="flex items-center gap-2">
+              <Activity size={14} className="text-primary" />
+              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Public Transparency Dashboard</span>
             </div>
-            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.reports}</p>
-            <span className="text-[9px] text-slate-450 block">Logged evidence contributions</span>
+            <span className="text-[9px] text-slate-400">Live data • All metrics from verified reports</span>
           </div>
-
-          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-            <div className="flex items-center justify-between text-slate-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Verified Issues</span>
-              <ShieldAlert size={15} className="text-slate-400" />
-            </div>
-            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.verified}</p>
-            <span className="text-[9px] text-slate-450 block">High confidence credibility score</span>
-          </div>
-
-          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-            <div className="flex items-center justify-between text-slate-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Citizens Impacted</span>
-              <FileCheck size={15} className="text-slate-400" />
-            </div>
-            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.citizens}+</p>
-            <span className="text-[9px] text-slate-450 block">Neighborhood footprint coverage</span>
-          </div>
-
-          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-            <div className="flex items-center justify-between text-slate-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Authorities Notified</span>
-              <Landmark size={15} className="text-slate-400" />
-            </div>
-            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.notified}</p>
-            <span className="text-[9px] text-slate-450 block">Escalated case file dispatches</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-y sm:divide-y-0 divide-slate-100">
+            {[
+              { label: 'Total Reports', value: stats.reports, icon: Users, sub: 'All submissions', color: 'text-slate-700' },
+              { label: 'Verified', value: stats.verified, icon: ShieldAlert, sub: 'Credibility ≥ 80%', color: 'text-emerald-700' },
+              { label: 'In Progress', value: stats.inProgress, icon: Clock, sub: 'Classified & clustered', color: 'text-amber-700' },
+              { label: 'Drafted', value: stats.drafted, icon: FileCheck, sub: 'Brief generated', color: 'text-blue-700' },
+              { label: 'Escalated', value: stats.escalated, icon: Landmark, sub: 'Sent to authority', color: 'text-rose-700' },
+              { label: 'Citizens Affected', value: `${stats.citizens}+`, icon: Users, sub: 'Footprint proxy', color: 'text-slate-700' },
+            ].map(({ label, value, icon: Icon, sub, color }) => (
+              <div key={label} className="px-5 py-4 space-y-1 select-none">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
+                  <Icon size={12} className="text-slate-300" />
+                </div>
+                <p className={`text-xl font-bold tracking-tight ${color}`}>{value}</p>
+                <span className="text-[9px] text-slate-400 block">{sub}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
