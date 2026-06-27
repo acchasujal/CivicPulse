@@ -9,7 +9,11 @@ class DummySchema(BaseModel):
     name: str
     value: int
 
-@pytest.mark.asyncio
+@pytest.fixture
+def anyio_backend():
+    return 'asyncio'
+
+@pytest.mark.anyio
 async def test_successful_generate_structured_output():
     # Setup mock response
     mock_response = MagicMock()
@@ -36,7 +40,7 @@ async def test_successful_generate_structured_output():
     # Check generate_content called once
     mock_models.generate_content.assert_called_once()
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_retry_on_validation_failure_then_success():
     # First call returns malformed JSON, second call returns correct JSON
     mock_response_1 = MagicMock()
@@ -63,7 +67,7 @@ async def test_retry_on_validation_failure_then_success():
     # generate_content called twice (one initial + one retry)
     assert mock_models.generate_content.call_count == 2
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_failed_twice_raises_502():
     # Both calls return malformed JSON
     mock_response = MagicMock()
@@ -87,7 +91,7 @@ async def test_failed_twice_raises_502():
     assert excinfo.value.detail == {"error": "ai_unavailable", "retryable": True}
     assert mock_models.generate_content.call_count == 2
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_timeout_enforcement():
     # Mock models generate_content to sleep for longer than timeout
     async def slow_generate(*args, **kwargs):

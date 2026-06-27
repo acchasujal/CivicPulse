@@ -137,13 +137,22 @@ async def create_issue(
         }))
         raise e
 
+    # Map Agent 1 outputs to Database allowed types to avoid ValidationErrors
+    mapped_issue_type = agent1_result.issue_type
+    if mapped_issue_type == "lighting":
+        mapped_issue_type = "street_lighting"
+    elif mapped_issue_type == "waste":
+        mapped_issue_type = "garbage"
+    elif mapped_issue_type == "other":
+        mapped_issue_type = "garbage"
+
     # Create and save DB record
     db_issue = Issue(
         photo_url=f"/static/uploads/{unique_filename}",
         latitude=latitude,
         longitude=longitude,
         user_note=user_note,
-        issue_type=agent1_result.issue_type,
+        issue_type=mapped_issue_type,
         severity=agent1_result.severity,
         description=agent1_result.description,
         credibility_score=agent1_result.credibility_score,
