@@ -9,6 +9,8 @@ import {
 } from '@/utils/issueHelpers';
 import { cn } from '@/lib/utils';
 
+import { HelpTooltip } from '@/components/shared/HelpTooltip';
+
 interface EvidenceCardProps {
   issue: Issue;
   className?: string;
@@ -103,12 +105,13 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
                     <span>AI Verified ({Math.round(issue.credibility_score * 100)}%)</span>
                   </span>
                 )}
-                {imageIntegrityStatus === "Original Evidence" && (
+                 {imageIntegrityStatus === "Original Evidence" && (
                   <span 
                     className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/50 shadow-sm select-none"
                     title="No visual duplicates detected in public database"
                   >
                     <span>✓ Original Evidence</span>
+                    <HelpTooltip text="Detects visually similar evidence using perceptual hashing to reduce duplicate reports while preserving genuine submissions." />
                   </span>
                 )}
                 {imageIntegrityStatus === "Similar Evidence Detected" && (
@@ -117,6 +120,7 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
                     title="Perceptual hashing detected similar image structure in database"
                   >
                     <span>⚠ Similar Evidence ({imageIntegritySimilarity}%)</span>
+                    <HelpTooltip text="Detects visually similar evidence using perceptual hashing to reduce duplicate reports while preserving genuine submissions." />
                   </span>
                 )}
                 {imageIntegrityStatus === "Possible Duplicate Evidence" && (
@@ -125,6 +129,7 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
                     title="Perceptual hashing detected highly matching image in database"
                   >
                     <span>⚠ Possible Duplicate ({imageIntegritySimilarity}%)</span>
+                    <HelpTooltip text="Detects visually similar evidence using perceptual hashing to reduce duplicate reports while preserving genuine submissions." />
                   </span>
                 )}
               </div>
@@ -221,6 +226,7 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
                 <span className="text-[10px] font-bold text-slate-750 uppercase tracking-wider">
                   Agent 2 Deduplication Reasoning
                 </span>
+                <HelpTooltip text="Explains why reports were merged into an existing cluster or kept as separate community issues." />
               </div>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="bg-white p-2.5 rounded border border-slate-200/60 shadow-sm">

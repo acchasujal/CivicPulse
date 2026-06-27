@@ -3,6 +3,7 @@ import { BarChart3, Layers, MapPin, ShieldAlert, Tag, Users, Zap } from 'lucide-
 import type { Issue, Cluster, ImpactSummary } from '@/api/types';
 import { humanizeIssueType } from '@/utils/issueHelpers';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/shared/HelpTooltip';
 
 interface ImpactAnalyticsCardProps {
   issue: Issue;
@@ -67,8 +68,9 @@ export const ImpactAnalyticsCard: React.FC<ImpactAnalyticsCardProps> = ({
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 select-none">
         <div className="flex items-center gap-2">
           <BarChart3 size={15} className="text-primary shrink-0" />
-          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
             Impact Analytics
+            <HelpTooltip text="Summarizes estimated public impact using existing risk and clustering information." />
           </h4>
         </div>
         <span className={cn(

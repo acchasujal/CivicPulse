@@ -2,6 +2,8 @@ import React from 'react';
 import { Sparkles, Building2, ShieldAlert, Layers, Clock, ArrowRight } from 'lucide-react';
 import type { Issue, Cluster } from '@/api/types';
 
+import { HelpTooltip } from '@/components/shared/HelpTooltip';
+
 interface AiRecommendationsProps {
   issue: Issue;
   cluster?: Cluster | null;
@@ -74,8 +76,9 @@ export const AiRecommendations: React.FC<AiRecommendationsProps> = ({
       <div className="flex items-center gap-2 border-b border-slate-100 pb-3 select-none">
         <Sparkles size={16} className="text-primary shrink-0" />
         <div className="leading-tight">
-          <h4 className="text-xs font-bold text-slate-750 uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-slate-750 uppercase tracking-wider flex items-center">
             AI Operations & Recommendation Panel
+            <HelpTooltip text="Suggests next actions using outputs from the five-agent reasoning pipeline." />
           </h4>
           <p className="text-[9px] text-slate-450 mt-0.5">
             Suggested escalation routing, priority, and next administrative steps derived from evidence.

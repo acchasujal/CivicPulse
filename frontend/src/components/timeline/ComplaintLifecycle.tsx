@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Circle, Send, FileDown, ThumbsUp, AlertTriangle } from 'lucide-react';
 import type { Issue, ActionDraft, Cluster, ImpactSummary } from '@/api/types';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/shared/HelpTooltip';
 
 interface ComplaintLifecycleProps {
   issue: Issue;
@@ -182,13 +183,22 @@ export const ComplaintLifecycle: React.FC<ComplaintLifecycleProps> = ({
 
   return (
     <div className="border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 select-none">
-        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-          Complaint Lifecycle
-        </h4>
-        <p className="text-[10px] text-slate-450 mt-0.5">
-          Real milestones from AI pipeline · Future stages clearly labelled as expected
-        </p>
+      <div className="px-6 py-4 border-b border-slate-100 select-none flex items-center justify-between">
+        <div>
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+            Complaint Lifecycle
+            <HelpTooltip text="Models the complete civic lifecycle from evidence collection through escalation and resolution." />
+          </h4>
+          <p className="text-[10px] text-slate-450 mt-0.5">
+            Real milestones from AI pipeline · Future stages clearly labelled as expected
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded uppercase tracking-wider select-none flex items-center">
+            Response Tracker
+            <HelpTooltip text="Tracks expected progress after complaint generation to encourage transparency." />
+          </span>
+        </div>
       </div>
 
       <div className="p-6 relative">

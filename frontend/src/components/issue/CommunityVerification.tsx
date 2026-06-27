@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThumbsUp, Camera, MessageSquare, CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/shared/HelpTooltip';
 
 interface CommunityVerificationProps {
   issueId?: string; // reserved for future backend integration
@@ -47,8 +48,9 @@ export const CommunityVerification: React.FC<CommunityVerificationProps> = ({
         <div className="flex items-center gap-2 select-none">
           <MessageSquare size={15} className="text-primary shrink-0" />
           <div>
-            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
               Community Verification
+              <HelpTooltip text="Allows multiple citizens to strengthen evidence for the same civic issue." />
             </h4>
             <p className="text-[10px] text-slate-450 mt-0.5">
               Nearby citizens can corroborate this report.
