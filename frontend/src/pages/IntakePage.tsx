@@ -315,12 +315,12 @@ export const IntakePage: React.FC = () => {
                     aria-label={`Step ${step.number}: ${step.label}${isCompleted ? ', Completed' : ''}${isActive ? ', Active' : ''}`}
                   >
                     <span className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold border transition-colors",
+                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold border transition-colors shrink-0",
                       isActive && "bg-primary border-primary text-white shadow-sm",
                       isCompleted && "bg-emerald-50 border-emerald-250 text-emerald-700",
                       !isActive && !isCompleted && "bg-white border-slate-200 text-slate-400"
                     )}>
-                      {isCompleted ? <CheckCircle2 size={14} aria-label="Completed" /> : step.number}
+                      {isCompleted ? <CheckCircle2 size={15} aria-label="Completed" /> : step.number}
                     </span>
                     <span className={cn(
                       "text-xs font-bold font-sans tracking-tight hidden sm:inline",

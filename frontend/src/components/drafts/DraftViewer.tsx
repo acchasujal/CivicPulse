@@ -203,48 +203,48 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
           </div>
 
           {/* Bottom Row Actions Panel */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-slate-100 select-none">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-slate-100 select-none w-full">
             {/* Approval Flow */}
             {activeDraft.status === 'pending_review' ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => onApprove(activeDraft.id)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-small shadow transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-small shadow transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer min-h-[40px]"
                 >
                   <ThumbsUp size={13} />
-                  <span>Authorize Document</span>
+                  <span>Authorize</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => onReject(activeDraft.id)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-50 hover:bg-rose-100/50 text-rose-700 border border-rose-200 text-xs font-semibold rounded-small transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100/50 text-rose-700 border border-rose-200 text-xs font-semibold rounded-small transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer min-h-[40px]"
                 >
                   <ThumbsDown size={13} />
                   <span>Reject</span>
                 </button>
               </div>
             ) : activeDraft.status === 'rejected' ? (
-              <span className="text-xs font-bold text-rose-700 font-sans bg-rose-50 px-2.5 py-1 rounded-small border border-rose-200">
+              <span className="text-xs font-bold text-rose-700 font-sans bg-rose-50 px-2.5 py-1.5 rounded-small border border-rose-200 self-start">
                 This draft was rejected.
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 font-sans bg-emerald-50 px-2.5 py-1 rounded-small border border-emerald-250">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 font-sans bg-emerald-50 px-2.5 py-1.5 rounded-small border border-emerald-255 self-start">
                 <CheckCircle2 size={14} />
                 <span>Authorized Brief</span>
               </span>
             )}
 
             {/* Escalation Actions */}
-            <div className="flex items-center gap-3 ml-auto">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto sm:ml-auto">
               <button
                 type="button"
                 onClick={() => activeDraft.status === 'approved' && !isSubmitting && onEscalate(activeDraft.id, 'email')}
                 disabled={activeDraft.status !== 'approved' || isSubmitting}
                 className={cn(
-                  'inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-small shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none cursor-pointer',
+                  'flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-small shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none cursor-pointer min-h-[40px]',
                   activeDraft.status === 'approved'
                     ? 'bg-primary hover:bg-primary-hover text-white active:scale-[0.98]'
                     : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
@@ -259,15 +259,15 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
                 onClick={() => activeDraft.status === 'approved' && !isSubmitting && onEscalate(activeDraft.id, 'pdf_export')}
                 disabled={activeDraft.status !== 'approved' || isSubmitting}
                 className={cn(
-                  'inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-small shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none cursor-pointer',
+                  'flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-small shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none cursor-pointer min-h-[40px]',
                   activeDraft.status === 'approved'
                     ? 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:scale-[0.98]'
                     : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
                 )}
-                title={activeDraft.status !== 'approved' ? 'Authorize document before saving.' : 'Save to PDF'}
+                title={activeDraft.status !== 'approved' ? 'Authorize document before saving.' : 'Save PDF'}
               >
                 <FileDown size={13} />
-                <span>Save as PDF</span>
+                <span>Save PDF</span>
               </button>
             </div>
           </div>

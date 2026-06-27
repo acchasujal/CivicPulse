@@ -27,7 +27,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {...props}
     >
       {/* Icon block */}
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-4 shrink-0">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/5 text-primary border border-primary/10 mb-4 shrink-0 shadow-sm animate-fade">
         <Icon size={24} className="stroke-[1.5]" />
       </div>
 

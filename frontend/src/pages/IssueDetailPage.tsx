@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck, Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EvidenceCard } from '@/components/issue/EvidenceCard';
 import { ClusterCard } from '@/components/issue/ClusterCard';
@@ -39,11 +39,7 @@ export const IssueDetailPage: React.FC = () => {
   const [escalateMethod, setEscalateMethod] = useState<'email' | 'pdf_export'>('email');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'warning' | 'error' } | null>(null);
 
-  if (isLoading) {
-    return <LoadingState variant="page" message="Retrieving report details..." />;
-  }
-
-  if (error || !data) {
+  if (error || (!isLoading && !data)) {
     return (
       <div className="py-8">
         <ErrorState
@@ -56,10 +52,15 @@ export const IssueDetailPage: React.FC = () => {
     );
   }
 
-  const { issue, cluster, impact_summary, action_drafts } = data;
+  const { issue, cluster, impact_summary, action_drafts } = data || {
+    issue: undefined,
+    cluster: undefined,
+    impact_summary: undefined,
+    action_drafts: []
+  };
 
   // Find if any draft has been successfully escalated
-  const activeEscalation = action_drafts.find((d) => d.escalation)?.escalation || null;
+  const activeEscalation = action_drafts ? (action_drafts.find((d) => d.escalation)?.escalation || null) : null;
 
   // Handlers
   const handleApproveClick = (draftId: string) => {
@@ -180,7 +181,14 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            <EvidenceCard issue={issue} />
+            {isLoading || !issue ? (
+              <div className="h-80 md:h-[400px] border border-slate-200 bg-white rounded-medium overflow-hidden shadow-subtle flex flex-col items-center justify-center animate-pulse p-6">
+                <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
+                <span className="text-xs text-slate-400">Loading visual evidence...</span>
+              </div>
+            ) : (
+              <EvidenceCard issue={issue} />
+            )}
           </div>
         </div>
 
@@ -207,13 +215,17 @@ export const IssueDetailPage: React.FC = () => {
                   Tracking active agent checks and safety parameter thresholds.
                 </p>
               </div>
-              <AgentTimeline
-                issue={issue}
-                cluster={cluster}
-                impactSummary={impact_summary}
-                actionDrafts={action_drafts}
-                layout="responsive"
-              />
+              {isLoading ? (
+                <LoadingState variant="timeline" count={5} />
+              ) : (
+                <AgentTimeline
+                  issue={issue}
+                  cluster={cluster}
+                  impactSummary={impact_summary}
+                  actionDrafts={action_drafts}
+                  layout="responsive"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -232,7 +244,12 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            {cluster ? (
+            {isLoading ? (
+              <div className="h-32 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex flex-col justify-between">
+                <div className="h-4 bg-slate-200 rounded w-1/3" />
+                <div className="h-3 bg-slate-200 rounded w-1/2" />
+              </div>
+            ) : cluster && issue ? (
               <ClusterCard cluster={{
                 ...cluster,
                 center_lat: issue.latitude,
@@ -262,7 +279,15 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            {impact_summary ? (
+            {isLoading ? (
+              <div className="h-36 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex flex-col justify-between">
+                <div className="h-4 bg-slate-200 rounded w-1/4" />
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-full" />
+                  <div className="h-3 bg-slate-200 rounded w-5/6" />
+                </div>
+              </div>
+            ) : impact_summary && issue ? (
               <ImpactCard impact={{
                 ...impact_summary,
                 id: issue.id,
@@ -306,7 +331,9 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            {action_drafts && action_drafts.length > 0 ? (
+            {isLoading ? (
+              <LoadingState variant="document-viewer" />
+            ) : action_drafts && action_drafts.length > 0 && issue ? (
               <DraftViewer
                 drafts={action_drafts.map(d => ({
                   ...d,
@@ -354,7 +381,12 @@ export const IssueDetailPage: React.FC = () => {
               </h3>
             </div>
             
-            {activeEscalation ? (
+            {isLoading ? (
+              <div className="h-24 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex items-center justify-between">
+                <div className="h-4 bg-slate-200 rounded w-1/3" />
+                <div className="h-8 bg-slate-200 rounded w-24" />
+              </div>
+            ) : activeEscalation ? (
               <div className="space-y-2 select-none">
                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">
                   Sendgrid HTTP API logs

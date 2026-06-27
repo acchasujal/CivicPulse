@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Map, Plus, Filter, Users, ShieldAlert, Landmark, FileCheck } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { LoadingState } from '@/components/feedback/LoadingState';
 import { ErrorState } from '@/components/feedback/ErrorState';
@@ -40,20 +39,6 @@ export const TrackerPage: React.FC = () => {
       clusterCounts
     };
   }, [data]);
-
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex flex-col pb-12 animate-fade">
-        <PageHeader
-          title="Civic Operations Center"
-          subtitle="Monitor active civic issues, track pipeline progress, and review community dispatches."
-        />
-        <div className="py-8">
-          <LoadingState variant="card" count={3} message="Retrieving community reports..." />
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -111,43 +96,47 @@ export const TrackerPage: React.FC = () => {
       </div>
 
       {/* Impact-Oriented Stats Overview Dashboard */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Community Reports</span>
-            <Users size={15} className="text-slate-400" />
+      {isLoading ? (
+        <LoadingState variant="dashboard-stats" className="mt-6" />
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider">Community Reports</span>
+              <Users size={15} className="text-slate-400" />
+            </div>
+            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.reports}</p>
+            <span className="text-[9px] text-slate-450 block">Logged evidence contributions</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.reports}</p>
-          <span className="text-[9px] text-slate-450 block">Logged evidence contributions</span>
-        </div>
 
-        <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Verified Issues</span>
-            <ShieldAlert size={15} className="text-slate-400" />
+          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider">Verified Issues</span>
+              <ShieldAlert size={15} className="text-slate-400" />
+            </div>
+            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.verified}</p>
+            <span className="text-[9px] text-slate-450 block">High confidence credibility score</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.verified}</p>
-          <span className="text-[9px] text-slate-450 block">High confidence credibility score</span>
-        </div>
 
-        <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Citizens Impacted</span>
-            <FileCheck size={15} className="text-slate-400" />
+          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider">Citizens Impacted</span>
+              <FileCheck size={15} className="text-slate-400" />
+            </div>
+            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.citizens}+</p>
+            <span className="text-[9px] text-slate-450 block">Neighborhood footprint coverage</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.citizens}+</p>
-          <span className="text-[9px] text-slate-450 block">Neighborhood footprint coverage</span>
-        </div>
 
-        <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Authorities Notified</span>
-            <Landmark size={15} className="text-slate-400" />
+          <div className="border border-slate-200 bg-white rounded-medium p-4 space-y-1 shadow-subtle select-none">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider">Authorities Notified</span>
+              <Landmark size={15} className="text-slate-400" />
+            </div>
+            <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.notified}</p>
+            <span className="text-[9px] text-slate-450 block">Escalated case file dispatches</span>
           </div>
-          <p className="text-xl font-bold text-slate-900 tracking-tight">{stats.notified}</p>
-          <span className="text-[9px] text-slate-450 block">Escalated case file dispatches</span>
         </div>
-      </div>
+      )}
 
       {/* Filter Toolbar */}
       <div id="active-cases" className="mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200 select-none">
@@ -176,7 +165,9 @@ export const TrackerPage: React.FC = () => {
 
       {/* Grid List View / Empty State */}
       <div className="py-6 flex-1 flex flex-col">
-        {filteredIssues.length === 0 ? (
+        {isLoading ? (
+          <LoadingState variant="tracker-card" count={6} />
+        ) : filteredIssues.length === 0 ? (
           <EmptyState
             icon={Map}
             title={selectedType !== 'all' ? "No matching reports" : "No reports registered"}
@@ -198,7 +189,7 @@ export const TrackerPage: React.FC = () => {
                   to="/"
                   className="inline-flex items-center px-4 py-2 border border-slate-200 bg-white text-xs font-semibold text-secondary-foreground rounded-small hover:bg-slate-50 transition-all cursor-pointer shadow-sm animate-fade"
                 >
-                  Start Intake Flow
+                  Submit First Report
                 </Link>
               )
             }
