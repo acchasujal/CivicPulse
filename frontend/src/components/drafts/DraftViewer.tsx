@@ -6,6 +6,7 @@ import { StatusBadge } from '../shared/StatusBadge';
 import { cn } from '@/lib/utils';
 import { useUpdateDraft, useImproveDraft } from '@/api/queries';
 import { getLocalityName } from '@/utils/getLocalityName';
+import { useTour } from '@/context/TourContext';
 
 interface DraftViewerProps {
   drafts: ActionDraft[];
@@ -26,6 +27,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
   issue,
   issueId = '',
 }) => {
+  const { registerTourTarget } = useTour();
   const [activeTab, setActiveTab] = useState<string>('complaint');
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -476,6 +478,8 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
               {/* Escalation Actions */}
               <div className="flex items-center gap-2.5 w-full sm:w-auto sm:ml-auto">
                 <button
+                  id="tour-btn-send-email"
+                  ref={(el) => registerTourTarget('btn-send-email', el)}
                   type="button"
                   onClick={() => activeDraft.status === 'approved' && !isSubmitting && onEscalate(activeDraft.id, 'email')}
                   disabled={activeDraft.status !== 'approved' || isSubmitting}
@@ -491,6 +495,8 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
                   <span>Send Email</span>
                 </button>
                 <button
+                  id="tour-btn-save-pdf"
+                  ref={(el) => registerTourTarget('btn-save-pdf', el)}
                   type="button"
                   onClick={() => activeDraft.status === 'approved' && !isSubmitting && onEscalate(activeDraft.id, 'pdf_export')}
                   disabled={activeDraft.status !== 'approved' || isSubmitting}

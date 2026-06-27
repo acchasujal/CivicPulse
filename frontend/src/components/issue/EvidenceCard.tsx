@@ -10,6 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 
 import { HelpTooltip } from '@/components/shared/HelpTooltip';
+import { useTour } from '@/context/TourContext';
 
 interface EvidenceCardProps {
   issue: Issue;
@@ -30,6 +31,7 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
   verificationThreshold,
   verificationDecision,
 }) => {
+  const { registerTourTarget } = useTour();
   const [loaded, setLoaded] = useState(false);
 
   // Trust model factors based on actual issue metrics
@@ -92,7 +94,7 @@ export const EvidenceCardComponent: React.FC<EvidenceCardProps> = ({
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block leading-none mb-1">
                 Visual Evidence
               </span>
-              <div id="evidence-integrity-badge" className="flex flex-wrap items-center gap-2">
+              <div id="evidence-integrity-badge" ref={(el) => registerTourTarget('evidence-integrity', el)} className="flex flex-wrap items-center gap-2">
                 <h3 className="text-lg font-bold text-secondary-foreground font-sans tracking-tight">
                   {humanizeIssueType(issue.issue_type, issue.description)}
                 </h3>

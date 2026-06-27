@@ -19,6 +19,7 @@ import { ErrorState } from '@/components/feedback/ErrorState';
 import { ApprovalModal } from '@/components/dialogs/ApprovalModal';
 import { EscalationDialog } from '@/components/dialogs/EscalationDialog';
 import { cn } from '@/lib/utils';
+import { useTour } from '@/context/TourContext';
 import {
   useIssueDetail,
   useApproveDraft,
@@ -28,6 +29,7 @@ import {
 } from '@/api/queries';
 
 export const IssueDetailPage: React.FC = () => {
+  const { registerTourTarget } = useTour();
   const { id } = useParams<{ id: string }>();
   const issueId = id || '';
 
@@ -167,7 +169,7 @@ export const IssueDetailPage: React.FC = () => {
 
       {issue && (
         <div className="max-w-4xl mx-auto w-full px-4 md:px-0 pt-6 space-y-4">
-          <div id="ai-recommendations-container">
+          <div id="ai-recommendations-container" ref={(el) => registerTourTarget('ai-recommendations', el)}>
             <AiRecommendations issue={issue} cluster={cluster} />
           </div>
           <LatestUpdateCard
@@ -248,7 +250,7 @@ export const IssueDetailPage: React.FC = () => {
             
             <div className="border border-slate-200 bg-white rounded-medium p-6 md:p-8 shadow-subtle space-y-8">
               {/* Technical Pipeline */}
-              <div id="agent-timeline-container" className="space-y-4">
+              <div id="agent-timeline-container" ref={(el) => registerTourTarget('agent-timeline', el)} className="space-y-4">
                 <div className="space-y-1 border-b border-slate-100 pb-4 select-none">
                   <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     AI Agent Processing Pipeline
@@ -391,7 +393,7 @@ export const IssueDetailPage: React.FC = () => {
             {isLoading ? (
               <LoadingState variant="document-viewer" />
             ) : action_drafts && action_drafts.length > 0 && issue ? (
-              <div id="complaint-draft-workspace">
+              <div id="complaint-draft-workspace" ref={(el) => registerTourTarget('complaint-draft', el)}>
                 <DraftViewer
                   drafts={action_drafts.map(d => ({
                     ...d,
@@ -483,7 +485,7 @@ export const IssueDetailPage: React.FC = () => {
             </div>
 
             {issue && (
-              <div id="community-verification-container">
+              <div id="community-verification-container" ref={(el) => registerTourTarget('community-verification', el)}>
                 <CommunityVerification issueId={issueId} />
               </div>
             )}

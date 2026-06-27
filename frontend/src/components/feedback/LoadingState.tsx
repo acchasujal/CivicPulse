@@ -47,7 +47,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   if (variant === 'dashboard') {
     return (
-      <div className={cn('space-y-6 w-full animate-pulse select-none mt-6', className)}>
+      <div data-loading="dashboard" className={cn('space-y-6 w-full animate-pulse select-none mt-6', className)}>
         {/* AI Insights Card Skeleton */}
         <div className="border border-slate-200 bg-white rounded-medium overflow-hidden shadow-subtle">
           <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
@@ -279,7 +279,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   if (variant === 'page') {
     return (
-      <div className={cn('w-full space-y-8 py-8 animate-pulse select-none', className)}>
+      <div data-loading="page" className={cn('w-full space-y-8 py-8 animate-pulse select-none', className)}>
         {/* Page Header Skeleton */}
         <div className="space-y-3 pb-6 border-b border-secondary-border">
           <div className="h-8 bg-slate-200 rounded w-1/4" />
@@ -301,6 +301,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   return (
     <div
+      data-loading="spinner"
       className={cn(
         'flex flex-col items-center justify-center p-8 text-center space-y-3 w-full min-h-[200px]',
         className

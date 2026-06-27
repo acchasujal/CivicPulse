@@ -12,8 +12,10 @@ import { cn } from '@/lib/utils';
 import { getLocalityAndWard } from '@/utils/getLocalityName';
 import { humanizeIssueType } from '@/utils/issueHelpers';
 import { HelpTooltip } from '@/components/shared/HelpTooltip';
+import { useTour } from '@/context/TourContext';
 
 export const TrackerPage: React.FC = () => {
+  const { registerTourTarget } = useTour();
   const { data, isLoading, error, refetch } = useIssues();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -296,7 +298,7 @@ export const TrackerPage: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col pb-12 font-sans">
       {/* Landing Experience: 15-second value proposition header */}
-      <div className="bg-slate-900 text-white rounded-medium p-6 md:p-8 mt-6 shadow-premium relative overflow-hidden">
+      <div ref={(el) => registerTourTarget('tracker-header', el)} className="bg-slate-900 text-white rounded-medium p-6 md:p-8 mt-6 shadow-premium relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-teal-950/20 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-3xl space-y-3">
           <span className="text-[10px] font-bold text-teal-400 uppercase tracking-widest bg-teal-950/80 px-2 py-0.5 rounded-small border border-teal-800 select-none">
@@ -333,7 +335,7 @@ export const TrackerPage: React.FC = () => {
       ) : (
         <div className="mt-6 space-y-6 animate-fade">
           {/* AI Civic Insights Card */}
-          <div id="ai-civic-insights-card" className="border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
+          <div id="ai-civic-insights-card" ref={(el) => registerTourTarget('ai-insights', el)} className="border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 select-none">
               <div className="flex items-center gap-2">
                 <Sparkles size={14} className="text-primary animate-pulse shrink-0" />
@@ -355,7 +357,7 @@ export const TrackerPage: React.FC = () => {
           </div>
 
           {/* Public Transparency Dashboard Stats Card */}
-          <div id="transparency-dashboard-stats" className="border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
+          <div id="transparency-dashboard-stats" ref={(el) => registerTourTarget('transparency-dashboard', el)} className="border border-slate-200 bg-white rounded-medium shadow-subtle overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 select-none">
               <div className="flex items-center gap-2">
                 <Activity size={14} className="text-primary" />
@@ -384,7 +386,7 @@ export const TrackerPage: React.FC = () => {
             </div>
 
             {/* Cross-Issue Silence Ledger Sub-Section */}
-            <div id="silence-ledger-container" className="bg-slate-50/30">
+            <div id="silence-ledger-container" ref={(el) => registerTourTarget('silence-ledger', el)} className="bg-slate-50/30">
               <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 select-none">
                 <div className="flex items-center gap-2">
                   <AlertCircle size={14} className="text-rose-600" />
@@ -416,7 +418,7 @@ export const TrackerPage: React.FC = () => {
             </div>
 
             {/* Ward Pattern Intelligence Sub-Section */}
-            <div id="ward-pattern-container" className="border-t border-slate-100 bg-slate-50/10">
+            <div id="ward-pattern-container" ref={(el) => registerTourTarget('ward-pattern', el)} className="border-t border-slate-100 bg-slate-50/10">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 select-none">
                 <div className="flex items-center gap-2">
                   <Map size={14} className="text-teal-600" />
@@ -551,7 +553,7 @@ export const TrackerPage: React.FC = () => {
             <LoadingState variant="map" />
           </div>
         ) : filteredIssues.length > 0 ? (
-          <div id="operations-map-container" className="w-full lg:w-[65%] h-[380px] lg:h-[600px] shrink-0 rounded-medium overflow-hidden border border-slate-200/80 shadow-subtle bg-white relative">
+          <div id="operations-map-container" ref={(el) => registerTourTarget('operations-map', el)} className="w-full lg:w-[65%] h-[380px] lg:h-[600px] shrink-0 rounded-medium overflow-hidden border border-slate-200/80 shadow-subtle bg-white relative">
             <IssueMap
               issues={filteredIssues}
               selectedIssueId={selectedIssueId}

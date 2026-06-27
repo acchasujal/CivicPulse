@@ -4,6 +4,7 @@ import { CheckCircle2, Clock, Circle, Send, FileDown, ThumbsUp, AlertTriangle } 
 import type { Issue, ActionDraft, Cluster, ImpactSummary } from '@/api/types';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/shared/HelpTooltip';
+import { useTour } from '@/context/TourContext';
 
 interface ComplaintLifecycleProps {
   issue: Issue;
@@ -39,6 +40,7 @@ export const ComplaintLifecycle: React.FC<ComplaintLifecycleProps> = ({
   onApprove,
   onEscalate,
 }) => {
+  const { registerTourTarget } = useTour();
   const status = issue.status;
 
   // Derive real state booleans from existing data
@@ -194,7 +196,7 @@ export const ComplaintLifecycle: React.FC<ComplaintLifecycleProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <span id="government-response-tracker" className="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded uppercase tracking-wider select-none flex items-center">
+          <span id="government-response-tracker" ref={(el) => registerTourTarget('government-tracker', el)} className="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded uppercase tracking-wider select-none flex items-center">
             Response Tracker
             <HelpTooltip text="Tracks expected progress after complaint generation to encourage transparency." />
           </span>

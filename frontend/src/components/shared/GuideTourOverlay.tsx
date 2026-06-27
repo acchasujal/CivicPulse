@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTour } from '@/context/TourContext';
 import { Sparkles, HelpCircle, ArrowRight, ArrowLeft, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -32,93 +33,32 @@ class TourErrorBoundary extends React.Component<{ children: React.ReactNode; onR
 }
 
 export const GuideTourOverlayContent: React.FC = () => {
+  const navigate = useNavigate();
   const {
-    status,
-    stepState,
-    currentStepIndex,
+    fsmState,
     steps,
-    isActive,
+    currentStepIndex,
+    highlightStyle,
+    toastMessage,
+    isTransitioning,
+    transitionMessage,
     showWelcome,
     startTour,
     nextStep,
     prevStep,
     skipTour,
-    dontShowAgain
+    dontShowAgain,
+    restartTour
   } = useTour();
 
-  const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
   const step = steps[currentStepIndex];
-
-  // Listen for recovery / skip toasts
-  useEffect(() => {
-    const handleSkipToast = (e: Event) => {
-      const message = (e as CustomEvent).detail?.message || '';
-      setToastMessage(message);
-      setTimeout(() => setToastMessage(null), 3000);
-    };
-
-    window.addEventListener('civicpulse-tour-skip-toast', handleSkipToast);
-    return () => window.removeEventListener('civicpulse-tour-skip-toast', handleSkipToast);
-  }, []);
-
-  // Spotlight measurement and safe auto scroll
-  useEffect(() => {
-    if (status !== 'active' || stepState !== 'ready' || !step) {
-      setHighlightStyle(null);
-      return;
-    }
-
-    let active = true;
-    const measureAndScroll = async () => {
-      if (!active) return;
-      const element = document.querySelector(step.selector) as HTMLElement;
-      if (!element) return;
-
-      // Safe Auto Scroll
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
-      // Wait for scrolling to settle
-      await new Promise(resolve => setTimeout(resolve, 350));
-
-      if (!active) return;
-      const rect = element.getBoundingClientRect();
-      
-      // Enforce valid layout bounds before rendering spotlight
-      if (rect.width > 0 && rect.height > 0) {
-        setHighlightStyle({
-          top: `${rect.top + window.scrollY - 8}px`,
-          left: `${rect.left + window.scrollX - 8}px`,
-          width: `${rect.width + 16}px`,
-          height: `${rect.height + 16}px`,
-          position: 'absolute',
-        });
-      } else {
-        setHighlightStyle(null);
-      }
-    };
-
-    // Initial positioning
-    measureAndScroll();
-
-    // Listen to window adjustments
-    window.addEventListener('resize', measureAndScroll);
-    window.addEventListener('scroll', measureAndScroll);
-
-    return () => {
-      active = false;
-      window.removeEventListener('resize', measureAndScroll);
-      window.removeEventListener('scroll', measureAndScroll);
-    };
-  }, [currentStepIndex, status, stepState, step]);
 
   // Keyboard accessibility
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (status !== 'active') return;
+      if (fsmState === 'IDLE' || fsmState === 'COMPLETED') return;
       if (e.key === 'ArrowRight') {
-        handleNext();
+        nextStep();
       } else if (e.key === 'ArrowLeft') {
         prevStep();
       } else if (e.key === 'Escape') {
@@ -127,16 +67,78 @@ export const GuideTourOverlayContent: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [status, currentStepIndex]);
+  }, [fsmState, currentStepIndex]);
 
-  const handleNext = () => {
-    if (currentStepIndex === 0) {
-      // Auto-trigger default selection when leaving first step (effortless onboarding flow)
-      window.dispatchEvent(new CustomEvent('civicpulse-tour-select-default'));
-    }
-    nextStep();
+  // Render toast for recovery messaging
+  const renderToast = () => {
+    if (!toastMessage) return null;
+    return (
+      <div className="fixed bottom-5 right-5 z-[99999] bg-slate-900 border border-slate-800 text-white rounded-medium px-4 py-3 shadow-premium text-xs font-bold animate-fade font-sans select-none border">
+        <span>{toastMessage}</span>
+      </div>
+    );
   };
 
+  // Render Route Transition Overlay
+  if (isTransitioning && transitionMessage) {
+    return (
+      <div className="fixed inset-0 bg-slate-900/10 backdrop-blur-xs flex items-center justify-center p-4 z-[998] pointer-events-auto">
+        <div className="bg-white border border-slate-200/80 rounded-medium shadow-md px-4 py-2.5 flex items-center gap-2.5 select-none animate-fade">
+          <Loader2 className="animate-spin text-primary" size={15} />
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">
+            {transitionMessage}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Render Completion Modal
+  if (fsmState === 'COMPLETED') {
+    return (
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] animate-fade font-sans max-h-screen overflow-y-auto">
+        <div className="bg-white border border-slate-200 rounded-medium shadow-premium max-w-sm w-full p-6 text-center space-y-5 my-4 pointer-events-auto">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 shrink-0">
+            <Sparkles size={22} />
+          </div>
+          <div className="space-y-1 select-none">
+            <h2 className="text-base font-bold text-slate-800">You're ready to evaluate CivicPulse</h2>
+            <p className="text-[11px] text-slate-400 font-semibold leading-normal">
+              You have completed the guided onboarding tour.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5 pt-1">
+            <button
+              onClick={() => {
+                skipTour();
+                navigate('/tracker');
+              }}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-small shadow-sm transition-all cursor-pointer"
+            >
+              Explore Tracker
+            </button>
+            <button
+              onClick={() => {
+                skipTour();
+                navigate('/');
+              }}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-slate-250 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-small transition-all cursor-pointer"
+            >
+              Submit Another Report
+            </button>
+            <button
+              onClick={restartTour}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-1.5 text-slate-400 hover:text-slate-600 text-[10px] font-bold transition-all cursor-pointer font-sans"
+            >
+              Restart Tour
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render Welcome Modal
   if (showWelcome) {
     return (
       <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] animate-fade font-sans max-h-screen overflow-y-auto">
@@ -182,15 +184,15 @@ export const GuideTourOverlayContent: React.FC = () => {
             <ol className="text-[10px] text-slate-500 space-y-1 pl-1 list-decimal list-inside font-medium leading-normal">
               <li>Select a Demo Scenario</li>
               <li>Submit a demo report</li>
-              <li>Watch the 5-agent AI pipeline</li>
-              <li>Open the Public Tracker</li>
+              <li>Watch the AI pipeline</li>
+              <li>Open Tracker</li>
               <li>Explore AI Civic Insights</li>
-              <li>Click a Ward Pattern card</li>
+              <li>Click a Ward</li>
               <li>Inspect the Silence Ledger</li>
               <li>Open a complaint</li>
-              <li>Edit the AI draft</li>
-              <li>Generate the PDF</li>
-              <li>Send the official complaint email</li>
+              <li>Edit the draft</li>
+              <li>Generate PDF</li>
+              <li>Send Email</li>
             </ol>
           </div>
         </div>
@@ -198,35 +200,30 @@ export const GuideTourOverlayContent: React.FC = () => {
     );
   }
 
-  // Render toast for recovery messaging
-  const renderToast = () => {
-    if (!toastMessage) return null;
-    return (
-      <div className="fixed bottom-5 right-5 z-[99999] bg-slate-900 border border-slate-800 text-white rounded-medium px-4 py-3 shadow-premium text-xs font-bold animate-fade font-sans select-none border">
-        <span>{toastMessage}</span>
-      </div>
-    );
-  };
-
-  if (!isActive || !step) return renderToast();
-
-  // Route and target loading states (prevent locked scrolling or missing tooltips during transitions)
-  if (stepState !== 'ready') {
+  // If tour is inactive or transitioning target
+  if (fsmState === 'IDLE' || fsmState === 'NAVIGATING' || fsmState === 'WAITING_FOR_ROUTE' || fsmState === 'WAITING_FOR_SUSPENSE' || fsmState === 'WAITING_FOR_RENDER' || fsmState === 'WAITING_FOR_TARGET') {
     return (
       <>
         {renderToast()}
-        {/* Soft, non-blocking dim backdrop */}
-        <div className="fixed inset-0 bg-slate-900/10 backdrop-blur-xs flex items-center justify-center p-4 z-[998] pointer-events-auto">
-          <div className="bg-white border border-slate-200/80 rounded-medium shadow-md px-4 py-2.5 flex items-center gap-2.5 select-none">
-            <Loader2 className="animate-spin text-primary" size={15} />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">
-              Loading Tour Step...
-            </span>
+        {fsmState !== 'IDLE' && (
+          <div className="fixed inset-0 bg-slate-900/10 backdrop-blur-xs flex items-center justify-center p-4 z-[998] pointer-events-auto">
+            <div className="bg-white border border-slate-200/80 rounded-medium shadow-md px-4 py-2.5 flex items-center gap-2.5 select-none">
+              <Loader2 className="animate-spin text-primary" size={15} />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">
+                Loading Tour Step...
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </>
     );
   }
+
+  if (!step) return renderToast();
+
+  const totalSteps = steps.length;
+  const currentStepNum = currentStepIndex + 1;
+  const progressPercentage = Math.round((currentStepNum / totalSteps) * 100);
 
   return (
     <>
@@ -270,6 +267,20 @@ export const GuideTourOverlayContent: React.FC = () => {
             </button>
           </div>
 
+          {/* Progress Bar Component */}
+          <div className="w-full space-y-1 pt-0.5 select-none">
+            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+              <span>Step {currentStepNum} of {totalSteps}</span>
+              <span>{progressPercentage}%</span>
+            </div>
+            <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+          </div>
+
           {/* Explanatory Texts */}
           <div className="space-y-3 text-xs leading-relaxed text-slate-600">
             <p className="font-semibold text-slate-800">{step.description}</p>
@@ -307,7 +318,7 @@ export const GuideTourOverlayContent: React.FC = () => {
                 <span>Back</span>
               </button>
               <button
-                onClick={handleNext}
+                onClick={nextStep}
                 className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white font-bold rounded shadow-sm cursor-pointer"
               >
                 <span>{currentStepIndex === steps.length - 1 ? 'Finish' : 'Next'}</span>

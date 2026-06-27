@@ -14,10 +14,12 @@ import { demoScenarios } from '@/data/demoScenarios';
 import type { DemoScenario } from '@/data/demoScenarios';
 import { getLocalityName } from '@/utils/getLocalityName';
 import { cn } from '@/lib/utils';
+import { useTour } from '@/context/TourContext';
 
 export const IntakePage: React.FC = () => {
   const navigate = useNavigate();
   const createIssueMutation = useCreateIssue();
+  const { registerTourTarget, onIssueSubmitted } = useTour();
 
   // Stepper state
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -172,6 +174,7 @@ export const IntakePage: React.FC = () => {
       }
       setIsSubmitting(false);
       setSubmittedIssueId(response.id);
+      onIssueSubmitted(response.id);
 
     } catch (err) {
       setIsSubmitting(false);
@@ -313,6 +316,7 @@ export const IntakePage: React.FC = () => {
           <div className="relative inline-block text-left">
             <select
               id="demo-scenario-select"
+              ref={(el) => registerTourTarget('demo-scenario', el)}
               value=""
               onChange={(e) => {
                 if (e.target.value) {
@@ -347,7 +351,7 @@ export const IntakePage: React.FC = () => {
 
       {isSubmitting ? (
         /* Progress timeline view when uploading/submitting */
-        <div className="max-w-2xl mx-auto w-full py-12 space-y-8 animate-fade select-none">
+        <div id="intake-pipeline-container" ref={(el) => registerTourTarget('ai-pipeline', el)} className="max-w-2xl mx-auto w-full py-12 space-y-8 animate-fade select-none">
           <div className="text-center space-y-3">
             {createIssueMutation.isSuccess ? (
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 mb-2 shrink-0">
@@ -450,7 +454,7 @@ export const IntakePage: React.FC = () => {
                     Upload a clear, unaltered photograph of the infrastructure or municipal failure. The AI pipeline evaluates visual context, detects dupes, and determines incident parameters.
                   </p>
 
-                  <div id="photo-uploader-container">
+                  <div id="photo-uploader-container" ref={(el) => registerTourTarget('photo-uploader', el)}>
                     {photo ? (
                       <PhotoPreview
                         file={photo}
