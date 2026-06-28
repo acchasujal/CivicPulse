@@ -5,7 +5,7 @@ import { BottomNavigation } from '../navigation/BottomNavigation';
 import { Container } from './Container';
 import { LoadingState } from '../feedback/LoadingState';
 import { TourProvider, useTour } from '@/context/TourContext';
-import { GuideTourOverlay } from '../shared/GuideTourOverlay';
+import { GuideTourOverlay, TourWelcomeBanner } from '../shared/GuideTourOverlay';
 import { HelpCircle } from 'lucide-react';
 
 const HeaderBar: React.FC = () => {
@@ -36,6 +36,9 @@ export const AppLayoutContent: React.FC = () => {
       <main className="flex-1 flex flex-col min-w-0 pb-20 md:pb-8">
         {/* Header Bar with Guide Button */}
         <HeaderBar />
+
+        {/* Welcome Banner when tour is idle and not dismissed */}
+        <TourWelcomeBanner />
 
         <Container className="flex-1 flex flex-col">
           {/* Outlet renders active page route */}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { tourSteps } from '@/data/tourConfig';
+import { tourSteps, explorerFeatures } from '@/data/tourConfig';
 import type { TourStep } from '@/data/tourConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -22,6 +22,7 @@ interface TourContextType {
   showWelcome: boolean;
   isValidated: boolean;
   validationTimedOut: boolean;
+  completedFeatures: Record<string, boolean>;
 
   // Target registry (kept for page-level registration)
   registerTourTarget: (id: string, el: HTMLElement | null) => void;
@@ -43,6 +44,7 @@ interface TourContextType {
   dontShowAgain: () => void;
   restartTour: () => void;
   jumpToStep: (index: number) => void;
+  setCompletedFeatures: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 
   // Dev debug
   events: TourEvent[];
@@ -80,6 +82,15 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isValidated, setIsValidated] = useState(false);
   const [validationTimedOut, setValidationTimedOut] = useState(false);
 
+  // Feature Explorer Checklist state (persisted in localStorage)
+  const [completedFeatures, setCompletedFeatures] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('civicpulse-completed-features-v2');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  });
+
   // Resolved issue ID — read from URL or set via onIssueSubmitted
   const [resolvedIssueId, setResolvedIssueId] = useState<string | null>(null);
 
@@ -103,6 +114,11 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const onIssueSubmitted = useCallback((id: string) => {
     setResolvedIssueId(id);
   }, []);
+
+  // Sync completedFeatures to localStorage
+  useEffect(() => {
+    localStorage.setItem('civicpulse-completed-features-v2', JSON.stringify(completedFeatures));
+  }, [completedFeatures]);
 
   // ── Dev logger ────────────────────────────────────────────────────────────
   const addEvent = useCallback((type: string, details?: string) => {
@@ -228,6 +244,47 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearValidationTimers();
   }, [status, currentStepIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Passive Feature Visitor ───────────────────────────────────────────────
+  // Automatically check off checklist items when users naturally visit/validate them
+  useEffect(() => {
+    const checkInterval = setInterval(() => {
+      let updated = false;
+      const nextCompleted = { ...completedFeatures };
+
+      explorerFeatures.forEach(item => {
+        if (nextCompleted[item.id]) return;
+        const stepToValidate = tourSteps.find(s => s.id === item.stepId);
+        if (stepToValidate) {
+          // If the feature requires a specific route, check it:
+          const isRouteMatch = stepToValidate.route.includes(':id')
+            ? location.pathname.startsWith('/issue/')
+            : location.pathname === stepToValidate.route;
+
+          if (isRouteMatch) {
+            if (stepToValidate.validation) {
+              try {
+                if (stepToValidate.validation()) {
+                  nextCompleted[item.id] = true;
+                  updated = true;
+                }
+              } catch {}
+            } else {
+              // Route match is sufficient validation if no validation function
+              nextCompleted[item.id] = true;
+              updated = true;
+            }
+          }
+        }
+      });
+
+      if (updated) {
+        setCompletedFeatures(nextCompleted);
+      }
+    }, 1000);
+
+    return () => clearInterval(checkInterval);
+  }, [completedFeatures, location.pathname]);
+
   // ── isActive / showWelcome ─────────────────────────────────────────────────
   const isActive = status === 'active';
   const showWelcome = status === 'idle' && !localStorage.getItem('civicpulse-tour-dismissed');
@@ -287,6 +344,23 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [status, addEvent]);
 
+  // ── Auto-advance after 700ms when validation passes ──────────────────────
+  useEffect(() => {
+    if (status !== 'active') return;
+    if (isValidated) {
+      const timer = setTimeout(() => {
+        // Automatically check off the corresponding explorer feature
+        const featureItem = explorerFeatures.find(f => f.stepId === step?.id);
+        if (featureItem) {
+          setCompletedFeatures(prev => ({ ...prev, [featureItem.id]: true }));
+        }
+
+        nextStep();
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [isValidated, status, nextStep, step]);
+
   // ── Dev global API ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -300,9 +374,10 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       restart: restartTour,
       skip: skipTour,
       jump: jumpToStep,
+      completedFeatures,
     };
     return () => { delete (window as any).__TOUR__; };
-  }, [status, currentStepIndex, nextStep, prevStep, restartTour, skipTour, jumpToStep]);
+  }, [status, currentStepIndex, nextStep, prevStep, restartTour, skipTour, jumpToStep, completedFeatures]);
 
   return (
     <TourContext.Provider
@@ -314,6 +389,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         showWelcome,
         isValidated,
         validationTimedOut,
+        completedFeatures,
         registerTourTarget,
         targetRegistry,
         getTargetElement,
@@ -327,6 +403,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dontShowAgain,
         restartTour,
         jumpToStep,
+        setCompletedFeatures,
         events: eventsRef.current,
         addEvent,
         // Legacy compat stubs (consumed by existing pages/components)
