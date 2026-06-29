@@ -245,19 +245,34 @@ export const IssueDetailPage: React.FC = () => {
               />
             </div>
 
-            {/* SECTION 2: Spatial Deduplication */}
+            {/* SECTION 2: Community Accountability Layer */}
             <div className="space-y-2.5">
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
-                02. Spatial Clustering & Deduplication
+                02. Community Accountability Layer
+              </h3>
+              <div id="community-verification-container" ref={(el) => registerTourTarget('community-verification', el)}>
+                <CommunityVerification issueId={issueId} />
+              </div>
+            </div>
+
+            {/* SECTION 3: Spatial Clustering & Deduplication */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                03. Spatial Clustering & Deduplication
               </h3>
               {cluster ? (
-                <ClusterCard cluster={{
-                  ...cluster,
-                  center_lat: issue.latitude,
-                  center_lng: issue.longitude,
-                  first_reported_at: issue.created_at,
-                  last_reported_at: issue.created_at,
-                }} />
+                <div className="space-y-4">
+                  <div className="p-4 bg-teal-50/50 border border-teal-200/60 rounded-medium text-xs text-slate-700 select-none">
+                    <span className="font-bold text-teal-800">Collective Accountability:</span> Multiple citizens are affected by infrastructure failures in this immediate area. This cluster consolidates individual reports to escalate a single high-impact case.
+                  </div>
+                  <ClusterCard cluster={{
+                    ...cluster,
+                    center_lat: issue.latitude,
+                    center_lng: issue.longitude,
+                    first_reported_at: issue.created_at,
+                    last_reported_at: issue.created_at,
+                  }} />
+                </div>
               ) : (
                 <div className="border border-slate-200 bg-white rounded-medium p-6 text-center select-none shadow-subtle text-slate-500 text-xs">
                   Searching nearby coordinates... Case file is currently registered as a solitary report.
@@ -265,10 +280,10 @@ export const IssueDetailPage: React.FC = () => {
               )}
             </div>
 
-            {/* SECTION 3: Neighborhood Impact Intelligence */}
+            {/* SECTION 4: Neighborhood Impact Intelligence */}
             <div className="space-y-2.5">
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
-                03. Neighborhood Impact Intelligence
+                04. Neighborhood Impact Intelligence
               </h3>
               {impact_summary ? (
                 <ImpactCard impact={{
@@ -299,10 +314,10 @@ export const IssueDetailPage: React.FC = () => {
               )}
             </div>
 
-            {/* SECTION 4: Action Briefs Workspace */}
+            {/* SECTION 5: Accountability Action Drafts */}
             <div className="space-y-2.5">
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
-                04. Accountability Action Drafts
+                05. Accountability Action Drafts
               </h3>
               {action_drafts && action_drafts.length > 0 ? (
                 <div id="complaint-draft-workspace" ref={(el) => registerTourTarget('complaint-draft', el)}>
@@ -341,10 +356,10 @@ export const IssueDetailPage: React.FC = () => {
               )}
             </div>
 
-            {/* SECTION 5: Escalation Logs */}
+            {/* SECTION 6: Escalation Dispatch & Action Logs */}
             <div className="space-y-2.5">
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
-                05. Escalation Dispatch & Action Logs
+                06. Escalation Dispatch & Action Logs
               </h3>
               <div id="pdf-email-actions">
                 {activeEscalation ? (
@@ -361,16 +376,6 @@ export const IssueDetailPage: React.FC = () => {
                     icon={AlertTriangle}
                   />
                 )}
-              </div>
-            </div>
-
-            {/* SECTION 6: Community Layer */}
-            <div className="space-y-2.5">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
-                06. Community Accountability Layer
-              </h3>
-              <div id="community-verification-container" ref={(el) => registerTourTarget('community-verification', el)}>
-                <CommunityVerification issueId={issueId} />
               </div>
             </div>
 
