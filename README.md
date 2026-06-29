@@ -1,150 +1,303 @@
-# CivicPulse 🏛️⚡
-> **Active Civic Accountability Engine**
+# CivicPulse
 
-![CivicPulse Banner](https://via.placeholder.com/1200x400?text=CivicPulse+🏛️⚡+Active+Civic+Accountability+Engine) *(Hero Image Placeholder)*
+> **The problem isn't that citizens can't report civic issues. It's that nothing happens after they do.**
 
----
+CivicPulse is an AI-powered civic accountability platform that transforms verified citizen-submitted infrastructure evidence into structured community intelligence, actionable government-ready documents, and transparent escalation workflows.
 
-## ⚡ 1. The 30-Second Elevator Pitch
-Citizens already have tools to log civic complaints. **The bottleneck isn't reporting — it is accountability.** Individual tickets disappear into municipal black holes with no follow-up, no compiled evidence trail, and no consequence.
-
-**CivicPulse converts citizen-submitted photos into verified, clustered evidence trails and sendable legal dispatches (RTI & Municipal Grievances) within minutes.** By moving from individual complaints to clustered public ledgers, CivicPulse gives communities the collective leverage required to compel municipal response.
+Instead of generating another ticket number, CivicPulse helps citizens build evidence that is difficult to ignore.
 
 ---
 
-## 🎯 2. The Problem
-Municipal grievance systems suffer from two structural failures:
-1. **Passive Logging**: Existing apps merely log issues. A citizen gets a ticket number; nothing happens next.
-2. **System Pollution**: Duplicate uploads, selfies, documents, and screenshots flood municipal databases, wasting review time and blowing up AI token budgets.
-3. **Power Asymmetry**: Individual complaints lack the legal weight or compiled volume needed to force action.
+# The Problem
+
+Municipal grievance platforms have a reporting problem because they ultimately suffer from an accountability problem.
+
+Current systems typically:
+
+- Generate passive complaint tickets with little follow-up.
+- Accept screenshots, certificates, selfies, and irrelevant uploads that waste review time and AI resources.
+- Treat every report independently instead of identifying recurring community issues.
+- Provide little assistance for citizens who want to formally escalate unresolved problems.
+
+As a result, important civic issues often disappear into administrative queues.
 
 ---
 
-## 💡 3. Why Existing Solutions Fail
-- **MyGov / Ticket Portals**: Focus on database collection, not dispatching legally backed paperwork.
-- **Manual RTI Filing**: Requires legal expertise, fee payments, and manual tracking that average citizens cannot perform.
-- **Analytics Dashboards**: Present aggregate ward scores that officials ignore, rather than concrete, evidence-backed action documents.
+# The Solution
+
+CivicPulse converts a single evidence submission into an evidence-backed civic case.
+
+The platform:
+
+1. Validates uploaded evidence before expensive AI processing.
+2. Classifies the infrastructure issue.
+3. Detects nearby duplicate reports.
+4. Creates community evidence clusters.
+5. Assesses public impact.
+6. Drafts government-ready complaint and RTI documents.
+7. Requires explicit human approval.
+8. Dispatches approved complaints via email or exports them as printable PDFs.
+
+The result is not simply another complaint—it is a structured accountability workflow.
 
 ---
 
-## ✨ 4. Innovation Highlights
-- **Evidence Over Invention**: No fabricated statistics. Every number in CivicPulse traces back to a verified report.
-- **Collective Spatial Leverage**: Combines multiple reports of the same street-level issue into a single, severe, community-backed case file.
-- **Statutory Legal Drafting**: Automatically generates Section 6(1) Right to Information (RTI) applications, giving citizens legal standing.
-- **Preemptive Spam Filtration**: Stage-0 rejects invalid media locally and via Gemini Vision before it registers in the database.
+# End-to-End Workflow
 
----
-
-## 🗺️ 5. End-to-End Demo Flow (Try It in 2 Minutes)
-1. **Intake**: Upload a photo on the Intake Page. *(Demo: Select the "Pothole on Linking Road" demo case to pre-fill coordinates and note).*
-2. **Check the Rejection Gate**: Try uploading a selfie or a screenshot. The Stage-0 Validation Gate will reject it instantly with a checkbox checklist.
-3. **Observe the Pipeline**: Submit the report. Watch Agent 1 and Agent 2 run synchronously to classify the issue and map it.
-4. **Inspect the Case Operation File**: Open the tracker, find your pin, and view the Case File. Here you see:
-   - **Agent 1 visual attributes** (credibility score, severity).
-   - **Agent 2 spatial cluster details** (showing how many neighbors reported it).
-   - **Agent 3 impact assessment** (evidence-based safety risks).
-5. **Approve Action Drafts (Agent 4)**: View the generated Municipal Grievance and RTI application drafts. Click **Authorize** (Human-in-the-Loop gate).
-6. **Trigger Escalation (Agent 5)**: Click **Send Email** to dispatch the packet to the ward office via SendGrid, or click **Save PDF** to export a formatted document.
-
----
-
-## 🧠 6. AI Pipeline & 5-Agent Architecture
-
-```mermaid
-graph TD
-    User[Citizen User] -->|1. Upload Photo & Coordinates| FE[React Frontend]
-    FE -->|2. POST /issues| BE[FastAPI Backend]
-    
-    subgraph Google Cloud Run Container
-        BE -->|3. Local PIL + dhash cache| Stage0[Stage-0 Validation Gate]
-        Stage0 -->|4a. Rejected| REJ[Immediate Rejection UI]
-        Stage0 -->|4b. Passed| A1[Agent 1: Intake Classifier]
-        A1 -->|5. Gemini 2.0 Flash Vision| Gemini[(Gemini 2.0 API)]
-        A1 -->|6. Save Issue| DB[(SQLite DB + WAL)]
-        BE -->|7. Query Proximity| A2[Agent 2: Spatial Clusterer]
-        A2 -->|8. Deduplicate & Merge| DB
-        BE -->|9. Trigger Actions Background| A3[Agent 3: Impact Analyst]
-        A3 -->|10. Gemini Context Synthesis| Gemini
-        A3 -->|11. Save Impact Summary| DB
-        BE -->|12. Generate Briefs| A4[Agent 4: Action Generator]
-        A4 -->|13. Municipal & RTI Templates| DB
-        BE -->|14. Human-in-the-Loop Approval| FE
-        FE -->|15. Authorize Escalation| BE
-        BE -->|16. Dispatch Briefs| A5[Agent 5: Escalation Agent]
-        A5 -->|17a. Email| SendGrid[SendGrid API]
-        A5 -->|17b. Fallback PDF| PDF[Local PDF Export]
-    end
+```
+Citizen Upload
+      │
+      ▼
+Stage-0 Evidence Validation
+      │
+      ▼
+Issue Classification
+      │
+      ▼
+Community Clustering
+      │
+      ▼
+Impact Assessment
+      │
+      ▼
+Complaint & RTI Drafting
+      │
+      ▼
+Citizen Approval
+      │
+      ▼
+Government Escalation
 ```
 
-### The AI Agents:
-1. **Stage-0 Validation**: Pillow checks (brightness, blur, contrast) + Gemini Vision gate to filter out screenshots, certificates, and selfies.
-2. **Agent 1: Visual Intake Classifier**: Extracts classification, severity (1-5), details, and visual credibility score.
-3. **Agent 2: Spatial Clusterer**: Groups issues within a 300m radius using Haversine formula and Gemini semantic comparison.
-4. **Agent 3: Impact Analyst**: Evaluates safety risks and local pedestrian hazards without fake ward scores.
-5. **Agent 4: Action Generator**: Drafts municipal grievances and Section 6(1) RTI applications using official legal formats.
-6. **Agent 5: Escalation Agent**: Transmits drafts to ward offices via SendGrid, falling back to local PDF exports.
+---
+
+# Key Features
+
+## Stage-0 Evidence Validation
+
+Rejects invalid submissions before AI processing using:
+
+- MIME validation
+- Resolution validation
+- File-size validation
+- Blur detection
+- Brightness analysis
+- Perceptual hash cache
+- Vision-based evidence validation
+
+Invalid uploads such as screenshots, certificates, documents, selfies, or unrelated images are rejected immediately.
 
 ---
 
-## 🛠️ 7. Google Technologies
-- **Gemini 2.0 (Google GenAI SDK)**: Powering Stage-0 validation, classification, semantic deduplication, and drafting.
-- **Google Maps JavaScript API**: Powers the interactive Operations Map with custom bounds fitting and safety pins.
-- **Google Cloud Run**: Serverless containerized deployment with scale-to-zero capability.
-- **Google Secret Manager**: Secure storage for Gemini API keys.
-- **Google Cloud Build**: Automated CI/CD deployment pipelines.
+## AI Evidence Understanding
+
+Analyzes verified evidence to determine:
+
+- Issue category
+- Severity
+- Visual confidence
+- Geographic context
 
 ---
 
-## 🔍 8. Explainability & Responsible AI
-- **Explainable Metrics**: The `credibility_score` is defined in the UI as the AI's image quality and classification confidence. Risk level thresholds are deterministic (low ≤ 2 reports, moderate 3-7, high > 7).
-- **Human-in-the-Loop Gate**: Agent 5 is blocked behind an explicit citizen authorization request. The backend throws a 403 Forbidden error if a client attempts to escalate an unauthorized draft.
-- **Mandatory Disclaimers**: All RTI drafts are prefixed with `"AI-generated draft. Review before submission."` enforced by Pydantic model validation.
-- **No Fabricated Data**: No fake ward scores, officer ratings, or estimated completion times. Everything is derived from real citizen evidence.
+## Community Intelligence
+
+Nearby reports are grouped into community evidence clusters using spatial verification and semantic similarity.
+
+Instead of isolated complaints, CivicPulse builds collective evidence.
 
 ---
 
-## 📈 9. Screenshots & Demo GIF
+## Accountability Drafts
 
-![Pipeline Submission Flow](https://via.placeholder.com/800x450?text=Pipeline+Submission+Flow+GIF) *(Demo GIF Placeholder)*
+Automatically prepares:
 
-![Operations Dashboard](https://via.placeholder.com/800x450?text=Operations+Dashboard+Screenshot) *(Operations Dashboard Screenshot)*
+- Municipal Complaint
+- RTI Draft
+- Community Summary
 
-![Action Workspace](https://via.placeholder.com/800x450?text=Action+Workspace+Screenshot) *(Action Workspace Screenshot)*
+Documents remain editable and require citizen approval before dispatch.
 
 ---
 
-## 🧪 10. Local Setup & Testing
+## Human Approval
 
-### Prerequisites
+Nothing is sent automatically.
+
+The citizen reviews every generated draft before authorizing escalation.
+
+---
+
+## Government Escalation
+
+Approved complaints can be:
+
+- Sent via SendGrid Email
+- Exported as printable PDF
+
+Every dispatch is logged for transparency.
+
+---
+
+# AI Pipeline
+
+| Stage | Responsibility |
+|---------|----------------|
+| Stage 0 | Evidence Validation |
+| Agent 1 | Issue Classification |
+| Agent 2 | Spatial Verification & Clustering |
+| Agent 3 | Impact Assessment |
+| Agent 4 | Accountability Drafting |
+| Agent 5 | Government Escalation |
+
+Each stage has a clearly defined responsibility and produces structured outputs for the next stage.
+
+---
+
+# Architecture
+
+```
+Citizen
+   │
+   ▼
+Photo + Location
+   │
+   ▼
+Stage-0 Validation
+(Local + AI Validation)
+   │
+   ├── Reject
+   │
+   ▼
+Issue Classification
+   │
+   ▼
+Spatial Verification
+   │
+   ▼
+Community Cluster
+   │
+   ▼
+Impact Analysis
+   │
+   ▼
+Complaint & RTI Generation
+   │
+   ▼
+Citizen Approval
+   │
+   ▼
+Government Escalation
+```
+
+---
+
+# Google Technologies
+
+- Gemini (Google GenAI SDK)
+- Google Maps Platform
+- Google Cloud Run
+- Google Cloud Build
+- Google Secret Manager
+
+---
+
+# Tech Stack
+
+| Layer | Technology |
+|---------|------------|
+| Frontend | React, Vite, TypeScript |
+| Backend | FastAPI |
+| Database | SQLite |
+| AI | Gemini |
+| Maps | Google Maps Platform |
+| Email | SendGrid |
+| PDF | ReportLab |
+| Deployment | Docker + Google Cloud Run |
+
+---
+
+# Why CivicPulse?
+
+Most civic platforms focus on **report collection**.
+
+CivicPulse focuses on **government accountability**.
+
+Instead of asking:
+
+> "How can citizens report problems?"
+
+CivicPulse asks:
+
+> **"How can verified community evidence drive real government action?"**
+
+The platform combines evidence validation, AI reasoning, community intelligence, human approval, and official escalation into a single workflow.
+
+---
+
+# Screenshots
+
+> Replace this section with:
+>
+> - Landing Page
+> - Evidence Submission
+> - AI Pipeline
+> - Operations Dashboard
+> - Issue Workspace
+> - Accountability Drafts
+> - Government Escalation
+
+---
+
+# Local Setup
+
+## Prerequisites
+
 - Python 3.11+
-- Node 18+
-- Gemini API Key ([Google AI Studio](https://aistudio.google.com))
+- Node.js 18+
+- Gemini API Key
+- SendGrid API Key
 
-### Backend Setup
+## Backend
+
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Windows
+venv\Scripts\activate
+
 pip install -r requirements.txt
-python -m pytest tests/ -v
+
 uvicorn app.main:app --reload
 ```
 
-### Frontend Setup
+## Frontend
+
 ```bash
 cd frontend
+
 npm install
+
 npm run dev
 ```
 
 ---
 
-## 🚀 11. Deployment
-Deployed on **Google Cloud Run** using `cloudbuild.yaml` with automatic scaling.
+# Future Vision
+
+Potential future enhancements include:
+
+- Repair verification using follow-up evidence
+- Multi-level escalation workflows
+- Regional language document generation
+- Voice-based reporting
+- Smart city integrations
+- Government API integrations
 
 ---
 
-## 🔮 12. Future Scope
-- **Firebase Realtime DB**: To support live multi-user incident tracking.
-- **Voice Grievance Intake**: Allowing citizens to narrate details, translated to text via Gemini.
-- **Multi-language RTI generation**: Supporting local regional languages.
+
+# Authors
+
+Build Solo By A Second Year Engineering Student
