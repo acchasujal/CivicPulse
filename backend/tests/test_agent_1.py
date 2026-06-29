@@ -12,6 +12,9 @@ from app.models.issue import Issue
 from app.models import Cluster, ImpactSummary, ActionDraft, Escalation
 
 # Create database for testing (file-based to work across different sessions/connections)
+from app.dependencies import get_evidence_validator
+from app.services.evidence_validation import Stage0Result, Stage0Checks
+
 test_sqlite_file = "test_civicpulse.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
@@ -19,11 +22,24 @@ def override_get_session():
     with Session(test_engine) as session:
         yield session
 
+async def override_validate_evidence_photo(photo_bytes: bytes, mime_type: str):
+    return Stage0Result(
+        accepted=True,
+        failure=None,
+        confidence=1.0,
+        detected_object="Pothole",
+        checks=Stage0Checks(file=True, quality=True, scene=True, infrastructure=True, issue=True),
+        message="Valid photo",
+        suggestion="Valid"
+    )
+
 app.dependency_overrides[get_session] = override_get_session
+app.dependency_overrides[get_evidence_validator] = lambda: override_validate_evidence_photo
 
 @pytest.fixture(autouse=True)
 def setup_db():
     app.dependency_overrides[get_session] = override_get_session
+    app.dependency_overrides[get_evidence_validator] = lambda: override_validate_evidence_photo
     # Clean and recreate static directories
     if os.path.exists("static/uploads"):
         shutil.rmtree("static/uploads", ignore_errors=True)
@@ -38,6 +54,7 @@ def setup_db():
     yield
     SQLModel.metadata.drop_all(test_engine)
     app.dependency_overrides.pop(get_session, None)
+    app.dependency_overrides.pop(get_evidence_validator, None)
     
     # Clean up database file
     if os.path.exists(test_sqlite_file):

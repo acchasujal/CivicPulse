@@ -26,11 +26,15 @@ interface LifecycleStep {
   actionNode?: React.ReactNode;
 }
 
-const formatTs = (iso: string) =>
-  new Date(iso).toLocaleDateString(undefined, {
+const formatTs = (iso: string) => {
+  if (!iso) return 'Unknown';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return 'Unknown';
+  return d.toLocaleDateString(undefined, {
     month: 'short', day: 'numeric', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
+};
 
 export const ComplaintLifecycle: React.FC<ComplaintLifecycleProps> = ({
   issue,
@@ -82,7 +86,7 @@ export const ComplaintLifecycle: React.FC<ComplaintLifecycleProps> = ({
     },
     {
       id: 'complaint_generated',
-      label: 'Complaint Generated',
+      label: 'Draft Generated',
       description: hasAnyDraft
         ? `${actionDrafts.length} official brief${actionDrafts.length > 1 ? 's' : ''} prepared (RTI + Complaint).`
         : 'Official complaint and RTI drafts are pending impact assessment.',

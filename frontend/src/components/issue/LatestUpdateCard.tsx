@@ -22,8 +22,10 @@ interface UpdateInfo {
 }
 
 const formatRelative = (iso: string): string => {
+  if (!iso) return 'Unknown';
   try {
     const d = new Date(iso);
+    if (isNaN(d.getTime())) return 'Unknown';
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
     const diffH = Math.floor(diffMs / 3_600_000);
@@ -33,7 +35,7 @@ const formatRelative = (iso: string): string => {
     if (diffD < 7) return `${diffD}d ago`;
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   } catch {
-    return '';
+    return 'Unknown';
   }
 };
 

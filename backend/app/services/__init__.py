@@ -5,6 +5,7 @@ from .agent_4_action_generator import generate_action_drafts, Agent4Output
 from .email_client import send_email
 from .pdf_export import render_draft_to_pdf
 from .agent_5_escalation import escalate_draft
+from .evidence_validation import validate_evidence_photo, Stage0Result
 
 __all__ = [
     "GeminiClient", 
@@ -16,6 +17,8 @@ __all__ = [
     "Agent4Output",
     "send_email",
     "render_draft_to_pdf",
-    "escalate_draft"
+    "escalate_draft",
+    "validate_evidence_photo",
+    "Stage0Result"
 ]
 

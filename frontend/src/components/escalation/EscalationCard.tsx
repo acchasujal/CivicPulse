@@ -15,6 +15,7 @@ export const EscalationCard: React.FC<EscalationCardProps> = ({ escalation, clas
     if (!isoString) return 'Pending';
     try {
       const d = new Date(isoString);
+      if (isNaN(d.getTime())) return 'Unknown';
       return d.toLocaleDateString(undefined, {
         month: 'short',
         day: 'numeric',
@@ -23,7 +24,7 @@ export const EscalationCard: React.FC<EscalationCardProps> = ({ escalation, clas
         minute: '2-digit',
       });
     } catch (e) {
-      return isoString;
+      return 'Unknown';
     }
   };
 

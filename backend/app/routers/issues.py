@@ -17,10 +17,16 @@ from app.services.agent_2_verification import verify_and_cluster_issue
 from app.services.agent_3_impact import analyze_cluster_impact
 from app.services.agent_4_action_generator import generate_action_drafts
 from sqlmodel import Session, select
+from app.dependencies import get_evidence_validator
 
 logger = logging.getLogger("civicpulse")
 
 router = APIRouter(prefix="/issues", tags=["issues"])
+
+@router.get("/metrics", status_code=status.HTTP_200_OK)
+def get_metrics_endpoint():
+    from app.services.evidence_validation import metrics_tracker
+    return metrics_tracker.get_metrics()
 
 class IssuesListResponse(BaseModel):
     issues: List[Issue]
@@ -86,7 +92,8 @@ async def create_issue(
     latitude: float = Form(...),
     longitude: float = Form(...),
     user_note: Optional[str] = Form(None),
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    validator = Depends(get_evidence_validator)
 ):
     # Validate file type
     if photo.content_type not in ["image/jpeg", "image/png"]:
@@ -116,7 +123,50 @@ async def create_issue(
     # Read photo and save locally
     photo_bytes = await photo.read()
     with open(photo_path, "wb") as f:
-        f.write(photo_bytes)
+      f.write(photo_bytes)
+
+    # Call Stage 0 Validation Gate
+    try:
+        stage0_result = await validator(
+            photo_bytes=photo_bytes,
+            mime_type=photo.content_type
+        )
+    except Exception as e:
+        if os.path.exists(photo_path):
+            try:
+                os.remove(photo_path)
+            except Exception:
+                pass
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={"error": "ai_unavailable", "retryable": True}
+        )
+
+    if not stage0_result.accepted:
+        if os.path.exists(photo_path):
+            try:
+                os.remove(photo_path)
+            except Exception:
+                pass
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error": "validation_gate_failed",
+                "accepted": False,
+                "failure": stage0_result.failure,
+                "confidence": stage0_result.confidence,
+                "detected_object": stage0_result.detected_object,
+                "checks": {
+                    "file": stage0_result.checks.file,
+                    "quality": stage0_result.checks.quality,
+                    "scene": stage0_result.checks.scene,
+                    "infrastructure": stage0_result.checks.infrastructure,
+                    "issue": stage0_result.checks.issue
+                },
+                "message": stage0_result.message,
+                "suggestion": stage0_result.suggestion
+            }
+        )
 
     start_time = time.time()
     try:

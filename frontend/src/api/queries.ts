@@ -152,3 +152,24 @@ export const useTriggerDrafts = (issueId: string, clusterId: string) => {
     },
   });
 };
+
+export interface ValidationMetrics {
+  rejected_uploads: number;
+  accepted_uploads: number;
+  gemini_calls_saved: number;
+  cache_hits: number;
+  average_validation_latency_ms: number;
+  total_validations: number;
+}
+
+// Fetch validation gate metrics
+export const useValidationMetrics = () => {
+  return useQuery<ValidationMetrics>({
+    queryKey: ['validationMetrics'],
+    queryFn: async () => {
+      const response = await apiClient.get<ValidationMetrics>('/issues/metrics');
+      return response.data;
+    },
+    refetchInterval: 5000,
+  });
+};

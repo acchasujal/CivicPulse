@@ -16,6 +16,9 @@ from app.models.impact_summary import ImpactSummary
 from app.models.action_draft import ActionDraft
 from app.config import settings
 
+from app.dependencies import get_evidence_validator
+from app.services.evidence_validation import Stage0Result, Stage0Checks
+
 test_sqlite_file = "test_agent4_civicpulse.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
@@ -23,9 +26,21 @@ def override_get_session():
     with Session(test_engine) as session:
         yield session
 
+async def override_validate_evidence_photo(photo_bytes: bytes, mime_type: str):
+    return Stage0Result(
+        accepted=True,
+        failure=None,
+        confidence=1.0,
+        detected_object="Pothole",
+        checks=Stage0Checks(file=True, quality=True, scene=True, infrastructure=True, issue=True),
+        message="Valid photo",
+        suggestion="Valid"
+    )
+
 @pytest.fixture(autouse=True)
 def setup_db():
     app.dependency_overrides[get_session] = override_get_session
+    app.dependency_overrides[get_evidence_validator] = lambda: override_validate_evidence_photo
     if os.path.exists("static/uploads"):
         shutil.rmtree("static/uploads", ignore_errors=True)
     os.makedirs("static/uploads", exist_ok=True)
@@ -45,6 +60,7 @@ def setup_db():
     
     SQLModel.metadata.drop_all(test_engine)
     app.dependency_overrides.pop(get_session, None)
+    app.dependency_overrides.pop(get_evidence_validator, None)
     
     if os.path.exists(test_sqlite_file):
         try:

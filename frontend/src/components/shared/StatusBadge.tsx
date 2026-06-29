@@ -41,7 +41,7 @@ const statusConfigs: Record<string, BadgeConfig> = {
 
   // Draft statuses
   pending_review: {
-    label: 'Awaiting Approval',
+    label: 'Ready for Review',
     className: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   rejected: {

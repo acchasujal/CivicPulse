@@ -61,8 +61,10 @@ export const getSeverityBadgeColor = (sev: number, isActive: boolean): string =>
  * Formats full datetime string
  */
 export const formatDate = (isoString: string): string => {
+  if (!isoString) return 'Unknown';
   try {
     const d = new Date(isoString);
+    if (isNaN(d.getTime())) return 'Unknown';
     return d.toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
@@ -71,7 +73,7 @@ export const formatDate = (isoString: string): string => {
       minute: '2-digit',
     });
   } catch (e) {
-    return isoString;
+    return 'Unknown';
   }
 };
 
@@ -79,15 +81,17 @@ export const formatDate = (isoString: string): string => {
  * Formats date string only
  */
 export const formatDateOnly = (isoString: string): string => {
+  if (!isoString) return 'Unknown';
   try {
     const d = new Date(isoString);
+    if (isNaN(d.getTime())) return 'Unknown';
     return d.toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
   } catch (e) {
-    return isoString;
+    return 'Unknown';
   }
 };
 
@@ -95,13 +99,15 @@ export const formatDateOnly = (isoString: string): string => {
  * Gets human-readable relative time representation
  */
 export const getRelativeTime = (isoString: string): string => {
+  if (!isoString) return 'Unknown';
   try {
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) return 'Unknown';
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     if (diffDays <= 0) {
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60)); // 60 minutes
       if (diffHours <= 0) return 'Just now';
       return `${diffHours}h ago`;
     }
@@ -109,6 +115,6 @@ export const getRelativeTime = (isoString: string): string => {
     if (diffDays < 30) return `${diffDays}d ago`;
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   } catch (e) {
-    return '';
+    return 'Unknown';
   }
 };

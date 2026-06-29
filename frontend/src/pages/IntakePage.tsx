@@ -24,12 +24,12 @@ export const IntakePage: React.FC = () => {
   // Stepper state
   const [currentStep, setCurrentStep] = useState<number>(1);
 
-  // Form states
   const [photo, setPhoto] = useState<File | null>(null);
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [userNote, setUserNote] = useState<string>('');
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null);
+  const [validationGateError, setValidationGateError] = useState<any>(null);
 
   // Field validation errors
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -176,13 +176,15 @@ export const IntakePage: React.FC = () => {
 
       if (axios.isAxiosError(err) && err.response) {
         const data = err.response.data;
-        if (err.response.status === 422 && data.error === 'validation_error') {
+        if (err.response.status === 400 && data.detail && data.detail.error === 'validation_gate_failed') {
+          setValidationGateError(data.detail);
+        } else if (err.response.status === 422 && data.error === 'validation_error') {
           setFieldErrors(data.fields || { general: 'Failed to validate report fields.' });
           setSubmitError('Validation failed. Please check the coordinates and image criteria.');
         } else if (err.response.status === 502 && data.error === 'ai_unavailable') {
           setSubmitError('Gemini is currently unavailable. We could not analyze the photo. Please try again.');
         } else {
-          setSubmitError(data.detail || 'An unexpected error occurred. Please try again.');
+          setSubmitError(data.detail?.message || data.detail || 'An unexpected error occurred. Please try again.');
         }
       } else {
         setSubmitError('Network error. Please check your connection and try again.');
@@ -213,6 +215,135 @@ export const IntakePage: React.FC = () => {
     { number: 2, label: 'Location Lock' },
     { number: 3, label: 'Case Context' },
   ];
+
+  if (validationGateError) {
+    return (
+      <div className="max-w-2xl mx-auto w-full py-12 px-4 flex flex-col items-center justify-center font-sans select-none">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="w-full border border-slate-200 bg-white rounded-medium p-8 shadow-subtle flex flex-col items-center space-y-6"
+        >
+          {/* Rejection Alert/Warning icon */}
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-600 border border-rose-250 mb-2 shadow-sm animate-fade">
+            <AlertCircle size={36} className="stroke-[1.5]" />
+          </div>
+          
+          <div className="text-center space-y-2">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight font-sans">
+              Submission couldn't be verified
+            </h2>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Detected: <span className="text-rose-600 font-extrabold">{validationGateError.detected_object || 'Unknown'}</span>
+            </div>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+              {validationGateError.message || "This image does not appear to show a civic infrastructure issue."}
+            </p>
+            {validationGateError.suggestion && (
+              <p className="text-[11px] text-teal-700 font-bold bg-teal-50 border border-teal-100 rounded-small p-2.5 mt-2 leading-relaxed">
+                💡 Suggestion: {validationGateError.suggestion}
+              </p>
+            )}
+          </div>
+
+          {/* Validation Checklist Indicators */}
+          {validationGateError.checks && (
+            <div className="w-full bg-slate-50 rounded-medium border border-slate-250/60 p-4.5 space-y-3 text-[11px] text-slate-700">
+              <h3 className="font-bold text-[9px] uppercase tracking-wider text-slate-400 border-b border-slate-200 pb-1.5 select-none">
+                Validation Checklist
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-[10px] font-bold">
+                <div className="flex items-center gap-1.5">
+                  {validationGateError.checks.file ? (
+                    <span className="text-emerald-600 font-extrabold">✓</span>
+                  ) : (
+                    <span className="text-rose-600 font-extrabold">✕</span>
+                  )}
+                  <span className="text-slate-500">File Validation</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {validationGateError.checks.quality ? (
+                    <span className="text-emerald-600 font-extrabold">✓</span>
+                  ) : (
+                    <span className="text-rose-600 font-extrabold">✕</span>
+                  )}
+                  <span className="text-slate-500">Image Quality</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {validationGateError.checks.scene ? (
+                    <span className="text-emerald-600 font-extrabold">✓</span>
+                  ) : (
+                    <span className="text-rose-600 font-extrabold">✕</span>
+                  )}
+                  <span className="text-slate-500">Scene Classification</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {validationGateError.checks.infrastructure ? (
+                    <span className="text-emerald-600 font-extrabold">✓</span>
+                  ) : (
+                    <span className="text-rose-600 font-extrabold">✕</span>
+                  )}
+                  <span className="text-slate-500">Civic Infrastructure</span>
+                </div>
+                <div className="flex items-center gap-1.5 col-span-2">
+                  {validationGateError.checks.issue ? (
+                    <span className="text-emerald-600 font-extrabold">✓</span>
+                  ) : (
+                    <span className="text-rose-600 font-extrabold">✕</span>
+                  )}
+                  <span className="text-slate-500">Visible Civic Issue</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Accepted items checklist */}
+          <div className="w-full bg-slate-50 rounded-medium border border-slate-200/60 p-5 space-y-3.5 text-xs text-slate-700">
+            <h3 className="font-bold text-[10px] uppercase tracking-wider text-slate-450 border-b border-slate-200 pb-2 select-none">
+              Accepted Examples
+            </h3>
+            <ul className="space-y-2 font-medium">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Potholes
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Garbage
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Water Leaks
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Streetlights
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Footpaths
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                Construction Debris
+              </li>
+            </ul>
+          </div>
+
+          <button
+            onClick={() => {
+              setValidationGateError(null);
+              handleReset();
+            }}
+            className="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-small shadow transition-all cursor-pointer text-center"
+          >
+            Upload Another Image
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (submittedIssueId) {
     return (
@@ -355,12 +486,28 @@ export const IntakePage: React.FC = () => {
             <h2 className="text-lg font-bold text-secondary-foreground font-sans tracking-tight">
               {createIssueMutation.isSuccess ? 'Evidence Verified & Processed!' : 'Processing Case Evidence...'}
             </h2>
-            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-              {createIssueMutation.isSuccess 
-                ? 'Incident registered. Navigating to operations narrative detail page...' 
-                : `FastAPI endpoint scanning nearby incident maps. Elapsed: ${elapsedSeconds}s (takes ~6-15s).`
-              }
-            </p>
+            <div className="flex justify-center items-center gap-4 text-xs font-semibold text-slate-500 max-w-md mx-auto py-2 bg-slate-50 border border-slate-200/60 rounded-medium shadow-sm">
+              <div className="px-3 border-r border-slate-200">
+                <span className="text-[9px] uppercase tracking-wider text-slate-450 block">Elapsed Time</span>
+                <span className="text-sm font-bold text-slate-750">{elapsedSeconds}s</span>
+              </div>
+              <div className="px-3 border-r border-slate-200">
+                <span className="text-[9px] uppercase tracking-wider text-slate-450 block">Completed Stages</span>
+                <span className="text-sm font-bold text-emerald-600">{Math.min(6, Math.floor(elapsedSeconds / 2))} / 6</span>
+              </div>
+              <div className="px-3">
+                <span className="text-[9px] uppercase tracking-wider text-slate-450 block">Current Stage</span>
+                <span className="text-sm font-bold text-primary">
+                  {createIssueMutation.isSuccess ? 'Completed' : (
+                    elapsedSeconds < 2 ? 'Stage 0' : 
+                    elapsedSeconds < 4 ? 'Agent 1' : 
+                    elapsedSeconds < 6 ? 'Agent 2' : 
+                    elapsedSeconds < 8 ? 'Agent 3' : 
+                    elapsedSeconds < 10 ? 'Agent 4' : 'Agent 5'
+                  )}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="border border-slate-200 bg-white rounded-medium p-6 md:p-8 shadow-subtle">

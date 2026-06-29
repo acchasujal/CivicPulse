@@ -187,8 +187,12 @@ export const IssueMap: React.FC<IssueMapProps> = ({
         onSelectIssue(primary.id);
 
         const avgSeverity = (reports.reduce((sum, r) => sum + r.severity, 0) / reports.length).toFixed(1);
-        const firstReported = new Date(reports[reports.length - 1].created_at).toLocaleDateString();
-        const lastReported = new Date(reports[0].created_at).toLocaleDateString();
+        const rawFirst = reports[reports.length - 1].created_at;
+        const rawLast = reports[0].created_at;
+        const d1 = new Date(rawFirst);
+        const d2 = new Date(rawLast);
+        const firstReported = isNaN(d1.getTime()) ? 'Unknown' : d1.toLocaleDateString();
+        const lastReported = isNaN(d2.getTime()) ? 'Unknown' : d2.toLocaleDateString();
 
         const infoContent = `
           <div style="font-family: system-ui, -apple-system, sans-serif; padding: 4px; width: 200px; font-size: 11px; line-height: 1.5; color: #475569;">

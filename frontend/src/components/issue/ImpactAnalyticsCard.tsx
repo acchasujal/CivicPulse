@@ -109,7 +109,7 @@ export const ImpactAnalyticsCard: React.FC<ImpactAnalyticsCardProps> = ({
           icon={MapPin}
           label="Nearby Reports"
           value={cluster ? `${cluster.report_count} logged` : '1 logged'}
-          sub={cluster ? `Last: ${new Date(cluster.last_reported_at).toLocaleDateString()}` : 'First report'}
+          sub={cluster && cluster.last_reported_at && !isNaN(new Date(cluster.last_reported_at).getTime()) ? `Last: ${new Date(cluster.last_reported_at).toLocaleDateString()}` : 'First report'}
         />
 
         <StatItem

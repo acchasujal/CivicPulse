@@ -19,6 +19,11 @@ ENV/
 # Database files
 *.db
 *.sqlite3
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
 
 # Local/uploaded static assets
 static/uploads/*
@@ -30,3 +35,4 @@ static/downloads/*
 .idea/
 .vscode/
 *.swp
+.agents/rules/civicpulse-workspace-rules.md
