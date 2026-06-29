@@ -364,7 +364,7 @@ export const TrackerPage: React.FC = () => {
             </div>
 
             {/* Main stats grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 divide-x divide-y sm:divide-y-0 divide-slate-100 border-b border-slate-100 font-sans">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-slate-100 border-b border-slate-100 font-sans">
               {[
                 { label: 'Active Clusters', value: Object.keys(clusterCounts).length, sub: 'Spatial groupings', color: 'text-amber-700 font-bold' },
                 { label: 'Reports Today', value: issues.filter(i => new Date(i.created_at).toDateString() === new Date().toDateString()).length, sub: 'Logged last 24h', color: 'text-slate-700 font-mono' },
@@ -384,15 +384,22 @@ export const TrackerPage: React.FC = () => {
 
             {/* Issue distribution & AI pattern discovery row */}
             <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-slate-100 p-5 gap-6 md:gap-0 font-sans">
-              <div className="space-y-3.5 pr-0 md:pr-6 select-none">
-                <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">AI Pattern Discovery</h4>
-                <div className="space-y-2.5">
-                  {aiInsights.map((insight, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-650 leading-relaxed font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                      <span>{insight}</span>
-                    </div>
-                  ))}
+              <div className="space-y-3.5 pr-0 md:pr-6 select-none flex flex-col h-full">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">AI Civic Analytics Ticker</h4>
+                </div>
+                <div className="flex-1 bg-slate-950 p-4 rounded-medium border border-slate-800 font-mono text-[10px] text-teal-400 space-y-2 h-[154px] overflow-y-auto shadow-inner select-text">
+                  {aiInsights.length === 0 ? (
+                    <div className="text-slate-500 animate-pulse">[SYSTEM] Initializing diagnostics...</div>
+                  ) : (
+                    aiInsights.map((insight, idx) => (
+                      <div key={idx} className="flex items-start gap-1.5 leading-relaxed">
+                        <span className="text-teal-650 shrink-0 select-none">[ANALYSIS]</span>
+                        <span>{insight}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertTriangle, Play, Sparkles, Network, Scale, ShieldAlert, Landmark, FileCheck, Users } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertTriangle, Play } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EvidenceCard } from '@/components/issue/EvidenceCard';
 import { ClusterCard } from '@/components/issue/ClusterCard';
@@ -10,10 +10,9 @@ import { EscalationCard } from '@/components/escalation/EscalationCard';
 import { AgentTimeline } from '@/components/timeline/AgentTimeline';
 import { ComplaintLifecycle } from '@/components/timeline/ComplaintLifecycle';
 import { LatestUpdateCard } from '@/components/issue/LatestUpdateCard';
+import { TrustScoreCard } from '@/components/issue/TrustScoreCard';
 import { AiRecommendations } from '@/components/issue/AiRecommendations';
-import { ImpactAnalyticsCard } from '@/components/issue/ImpactAnalyticsCard';
 import { CommunityVerification } from '@/components/issue/CommunityVerification';
-import { LoadingState } from '@/components/feedback/LoadingState';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { ApprovalModal } from '@/components/dialogs/ApprovalModal';
@@ -168,293 +167,190 @@ export const IssueDetailPage: React.FC = () => {
       />
 
       {issue && (
-        <div className="max-w-4xl mx-auto w-full px-4 md:px-0 pt-6 space-y-4">
-          <div id="ai-recommendations-container" ref={(el) => registerTourTarget('ai-recommendations', el)}>
-            <AiRecommendations issue={issue} cluster={cluster} />
-          </div>
-          <LatestUpdateCard
-            issue={issue}
-            actionDrafts={action_drafts}
-            cluster={cluster}
-            onApprove={handleApproveClick}
-            onEscalate={handleEscalateClick}
-          />
-        </div>
-      )}
-
-      {/* Narrative Flow Stepper Layout */}
-      <div className="max-w-4xl mx-auto w-full py-8 relative pl-8 md:pl-16">
-        
-        {/* Continuous Vertical Timeline Track Line */}
-        <div className="absolute left-[15px] md:left-[31px] top-10 bottom-10 w-[2px] bg-slate-200/80 pointer-events-none" />
-
-        {/* SECTION 1: Visual Evidence Intake */}
-        <div className="relative pb-12">
-          {/* Timeline Step circle badge */}
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            01
-          </div>
+        <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <Landmark size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Incident Evidence Intake
-              </h3>
-            </div>
-            
-            {isLoading || !issue ? (
-              <div className="border border-slate-200 bg-white rounded-medium overflow-hidden shadow-subtle p-6 animate-pulse space-y-4">
-                <div className="aspect-[16/9] md:aspect-[21/9] bg-slate-100 rounded w-full" />
-                <div className="space-y-3 pt-2">
-                  <div className="h-4 bg-slate-200 rounded w-1/4" />
-                  <div className="h-3 bg-slate-150 rounded w-1/2" />
-                  <div className="h-3 bg-slate-150 rounded w-1/3" />
-                </div>
+          {/* Left Column: Sticky Sidebar on Desktop */}
+          <div className="lg:col-span-4 lg:sticky lg:top-6 space-y-6">
+            {/* AI Agent Processing Pipeline */}
+            <div className="border border-slate-200 bg-white rounded-medium p-5 shadow-subtle space-y-4">
+              <div className="space-y-1 border-b border-slate-100 pb-3 select-none">
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  AI Agent Pipeline
+                </h4>
+                <p className="text-[10px] text-slate-400">
+                  Active agent verification and routing stages.
+                </p>
               </div>
-            ) : (
+              <AgentTimeline
+                issue={issue}
+                cluster={cluster}
+                impactSummary={impact_summary}
+                actionDrafts={action_drafts}
+                layout="vertical"
+              />
+            </div>
+
+            {/* Evidence Trust Profile Card */}
+            <TrustScoreCard
+              issue={issue}
+              imageIntegrityStatus={data?.image_integrity_status}
+              imageIntegritySimilarity={data?.image_integrity_similarity}
+              verificationSimilarity={data?.verification_similarity}
+              verificationThreshold={data?.verification_threshold}
+              verificationDecision={data?.verification_decision}
+            />
+          </div>
+
+          {/* Right Column: Dynamic case info, recommendations, and actions */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {/* Live Lifecycle State Bar */}
+            <div className="border border-slate-200 bg-white rounded-medium p-5 shadow-subtle space-y-3">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider select-none">
+                Incident Lifecycle Track
+              </h4>
+              <ComplaintLifecycle
+                issue={issue}
+                actionDrafts={action_drafts}
+                cluster={cluster}
+                impactSummary={impact_summary}
+                onApprove={handleApproveClick}
+                onEscalate={handleEscalateClick}
+              />
+            </div>
+
+            {/* AI Recommendations Banner */}
+            <div id="ai-recommendations-container" ref={(el) => registerTourTarget('ai-recommendations', el)}>
+              <AiRecommendations issue={issue} cluster={cluster} />
+            </div>
+
+            {/* Latest Update Action Header */}
+            <LatestUpdateCard
+              issue={issue}
+              actionDrafts={action_drafts}
+              cluster={cluster}
+              onApprove={handleApproveClick}
+              onEscalate={handleEscalateClick}
+            />
+
+            {/* SECTION 1: Visual Evidence Details */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                01. Visual Evidence Details
+              </h3>
               <EvidenceCard
                 issue={issue}
                 imageIntegrityStatus={data?.image_integrity_status}
                 imageIntegritySimilarity={data?.image_integrity_similarity}
-                verificationSimilarity={data?.verification_similarity}
-                verificationThreshold={data?.verification_threshold}
-                verificationDecision={data?.verification_decision}
               />
-            )}
-          </div>
-
-          {/* Impact Analytics — real data from issue + cluster + impact_summary */}
-          {issue && (
-            <ImpactAnalyticsCard
-              issue={issue}
-              cluster={cluster}
-              impactSummary={impact_summary}
-            />
-          )}
-        </div>
-
-        {/* SECTION 2: Automated Verification Pipeline */}
-        <div className="relative pb-12">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            02
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <Sparkles size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Automated Verification Status
-              </h3>
             </div>
-            
-            <div className="border border-slate-200 bg-white rounded-medium p-6 md:p-8 shadow-subtle space-y-8">
-              {/* Technical Pipeline */}
-              <div id="agent-timeline-container" ref={(el) => registerTourTarget('agent-timeline', el)} className="space-y-4">
-                <div className="space-y-1 border-b border-slate-100 pb-4 select-none">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    AI Agent Processing Pipeline
-                  </h4>
-                  <p className="text-[10px] text-slate-400">
-                    Tracking active agent verification and parameter classification.
-                  </p>
-                </div>
-                {isLoading ? (
-                  <LoadingState variant="timeline" count={5} />
-                ) : (
-                  <AgentTimeline
-                    issue={issue}
-                    cluster={cluster}
-                    impactSummary={impact_summary}
-                    actionDrafts={action_drafts}
-                    layout="responsive"
-                  />
-                )}
-              </div>
-              
-              {/* Complaint Lifecycle */}
-              {issue && (
-                <div id="accountability-timeline-container" className="border-t border-slate-100 pt-6">
-                  <ComplaintLifecycle
-                    issue={issue}
-                    actionDrafts={action_drafts}
-                    cluster={cluster}
-                    impactSummary={impact_summary}
-                    onApprove={handleApproveClick}
-                    onEscalate={handleEscalateClick}
-                  />
+
+            {/* SECTION 2: Spatial Deduplication */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                02. Spatial Clustering & Deduplication
+              </h3>
+              {cluster ? (
+                <ClusterCard cluster={{
+                  ...cluster,
+                  center_lat: issue.latitude,
+                  center_lng: issue.longitude,
+                  first_reported_at: issue.created_at,
+                  last_reported_at: issue.created_at,
+                }} />
+              ) : (
+                <div className="border border-slate-200 bg-white rounded-medium p-6 text-center select-none shadow-subtle text-slate-500 text-xs">
+                  Searching nearby coordinates... Case file is currently registered as a solitary report.
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* SECTION 3: Community Verification */}
-        <div className="relative pb-12">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            03
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <Network size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Spatial Clustering & Deduplication
+            {/* SECTION 3: Neighborhood Impact Intelligence */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                03. Neighborhood Impact Intelligence
               </h3>
-            </div>
-            
-            {isLoading ? (
-              <div className="h-32 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex flex-col justify-between">
-                <div className="h-4 bg-slate-200 rounded w-1/3" />
-                <div className="h-3 bg-slate-200 rounded w-1/2" />
-              </div>
-            ) : cluster && issue ? (
-              <ClusterCard cluster={{
-                ...cluster,
-                center_lat: issue.latitude,
-                center_lng: issue.longitude,
-                first_reported_at: issue.created_at,
-                last_reported_at: issue.created_at,
-              }} />
-            ) : (
-              <div className="border border-slate-200 bg-white rounded-medium p-6 text-center select-none shadow-subtle text-slate-500 text-xs">
-                Searching nearby coordinates... Case file is currently registered as a solitary report.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* SECTION 4: Impact Assessment */}
-        <div className="relative pb-12">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            04
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <ShieldAlert size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Neighborhood Impact Intelligence
-              </h3>
-            </div>
-            
-            {isLoading ? (
-              <div className="h-36 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex flex-col justify-between">
-                <div className="h-4 bg-slate-200 rounded w-1/4" />
-                <div className="space-y-2">
-                  <div className="h-3 bg-slate-200 rounded w-full" />
-                  <div className="h-3 bg-slate-200 rounded w-5/6" />
-                </div>
-              </div>
-            ) : impact_summary && issue ? (
-              <ImpactCard impact={{
-                ...impact_summary,
-                id: issue.id,
-                cluster_id: cluster?.id || '',
-                potential_consequences: impact_summary.potential_consequences || 'No consequences documented.',
-                generated_at: issue.created_at
-              }} />
-            ) : (
-              <EmptyState
-                title="Impact Assessment Pending"
-                description="Neighborhood Impact analysis will activate automatically once more matching reports are submitted for this area. You can trigger the assessment manually for testing."
-                icon={AlertTriangle}
-                action={
-                  cluster && (
-                    <button
-                      onClick={handleTriggerImpact}
-                      disabled={triggerImpactMutation.isPending}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-250 bg-white text-xs font-bold text-slate-700 rounded-small hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
-                    >
-                      <Play size={12} className={cn(triggerImpactMutation.isPending && 'animate-spin')} />
-                      <span>{triggerImpactMutation.isPending ? 'Generating...' : 'Trigger Neighborhood Impact'}</span>
-                    </button>
-                  )
-                }
-              />
-            )}
-          </div>
-        </div>
-
-        {/* SECTION 5: Official Action Drafts */}
-        <div className="relative pb-12">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            05
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <Scale size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Accountability Action Drafts
-              </h3>
-            </div>
-            
-            {isLoading ? (
-              <LoadingState variant="document-viewer" />
-            ) : action_drafts && action_drafts.length > 0 && issue ? (
-              <div id="complaint-draft-workspace" ref={(el) => registerTourTarget('complaint-draft', el)}>
-                <DraftViewer
-                  drafts={action_drafts.map(d => ({
-                    ...d,
-                    cluster_id: cluster?.id || '',
-                    created_at: issue.created_at
-                  }))}
-                  onApprove={handleApproveClick}
-                  onReject={handleRejectClick}
-                  onEscalate={handleEscalateClick}
-                  isSubmitting={approveDraftMutation.isPending || escalateDraftMutation.isPending}
-                  issue={issue}
-                  issueId={issueId}
+              {impact_summary ? (
+                <ImpactCard impact={{
+                  ...impact_summary,
+                  id: issue.id,
+                  cluster_id: cluster?.id || '',
+                  potential_consequences: impact_summary.potential_consequences || 'No consequences documented.',
+                  generated_at: issue.created_at
+                }} />
+              ) : (
+                <EmptyState
+                  title="Impact Assessment Pending"
+                  description="Neighborhood Impact analysis will activate automatically once more matching reports are submitted for this area. You can trigger the assessment manually for testing."
+                  icon={AlertTriangle}
+                  action={
+                    cluster && (
+                      <button
+                        onClick={handleTriggerImpact}
+                        disabled={triggerImpactMutation.isPending}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-250 bg-white text-xs font-bold text-slate-700 rounded-small hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
+                      >
+                        <Play size={12} className={cn(triggerImpactMutation.isPending && 'animate-spin')} />
+                        <span>{triggerImpactMutation.isPending ? 'Generating...' : 'Trigger Neighborhood Impact'}</span>
+                      </button>
+                    )
+                  }
                 />
-              </div>
-            ) : (
-              <EmptyState
-                title="Action Briefs Pending"
-                description="Official complaint briefs will be compiled automatically once matching reports are clustered and the impact assessment is processed."
-                icon={AlertTriangle}
-                action={
-                  impact_summary && (
-                    <button
-                      onClick={handleTriggerDrafts}
-                      disabled={triggerDraftsMutation.isPending}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-250 bg-white text-xs font-bold text-slate-700 rounded-small hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
-                    >
-                      <Play size={12} className={cn(triggerDraftsMutation.isPending && 'animate-spin')} />
-                      <span>{triggerDraftsMutation.isPending ? 'Generating...' : 'Trigger Complaint Drafts'}</span>
-                    </button>
-                  )
-                }
-              />
-            )}
-          </div>
-        </div>
-
-        {/* SECTION 6: Escalation & Logs */}
-        <div className="relative">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            06
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <FileCheck size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Escalation Dispatch & Action logs
-              </h3>
+              )}
             </div>
-            
-            {isLoading ? (
-              <div className="h-24 border border-slate-200 bg-white rounded-medium p-6 animate-pulse flex items-center justify-between">
-                <div className="h-4 bg-slate-200 rounded w-1/3" />
-                <div className="h-8 bg-slate-200 rounded w-24" />
-              </div>
-            ) : (
+
+            {/* SECTION 4: Action Briefs Workspace */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                04. Accountability Action Drafts
+              </h3>
+              {action_drafts && action_drafts.length > 0 ? (
+                <div id="complaint-draft-workspace" ref={(el) => registerTourTarget('complaint-draft', el)}>
+                  <DraftViewer
+                    drafts={action_drafts.map(d => ({
+                      ...d,
+                      cluster_id: cluster?.id || '',
+                      created_at: issue.created_at
+                    }))}
+                    onApprove={handleApproveClick}
+                    onReject={handleRejectClick}
+                    onEscalate={handleEscalateClick}
+                    isSubmitting={approveDraftMutation.isPending || escalateDraftMutation.isPending}
+                    issue={issue}
+                    issueId={issueId}
+                  />
+                </div>
+              ) : (
+                <EmptyState
+                  title="Action Briefs Pending"
+                  description="Official complaint briefs will be compiled automatically once matching reports are clustered and the impact assessment is processed."
+                  icon={AlertTriangle}
+                  action={
+                    impact_summary && (
+                      <button
+                        onClick={handleTriggerDrafts}
+                        disabled={triggerDraftsMutation.isPending}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-250 bg-white text-xs font-bold text-slate-700 rounded-small hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
+                      >
+                        <Play size={12} className={cn(triggerDraftsMutation.isPending && 'animate-spin')} />
+                        <span>{triggerDraftsMutation.isPending ? 'Generating...' : 'Trigger Complaint Drafts'}</span>
+                      </button>
+                    )
+                  }
+                />
+              )}
+            </div>
+
+            {/* SECTION 5: Escalation Logs */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                05. Escalation Dispatch & Action Logs
+              </h3>
               <div id="pdf-email-actions">
                 {activeEscalation ? (
                   <div className="space-y-2 select-none">
                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">
-                      Sendgrid HTTP API logs
+                      SendGrid HTTP API logs
                     </h4>
                     <EscalationCard escalation={activeEscalation} />
                   </div>
@@ -466,33 +362,21 @@ export const IssueDetailPage: React.FC = () => {
                   />
                 )}
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* SECTION 7: Community Verification */}
-        <div className="relative">
-          <div className="absolute -left-[32px] md:-left-[48px] top-0 flex items-center justify-center h-8 w-8 rounded-full border border-slate-350 bg-white text-xs font-bold text-slate-600 shadow-sm select-none">
-            07
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2 select-none">
-              <Users size={15} className="text-primary shrink-0" />
-              <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest">
-                Community Verification
-              </h3>
             </div>
 
-            {issue && (
+            {/* SECTION 6: Community Layer */}
+            <div className="space-y-2.5">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 select-none">
+                06. Community Accountability Layer
+              </h3>
               <div id="community-verification-container" ref={(el) => registerTourTarget('community-verification', el)}>
                 <CommunityVerification issueId={issueId} />
               </div>
-            )}
+            </div>
+
           </div>
         </div>
-
-      </div>
+      )}
 
       {/* Confirmation & Dispatch Modals */}
       {approvalDraftId && (
