@@ -191,7 +191,7 @@ const getSuccessText = (stepId: string): string => {
     case 'ai-insights':
     case 'silence-ledger':
     case 'ward-pattern':
-      return '✓ AI Civic Insights Reviewed';
+      return '✓ Platform Intelligence Explored';
     case 'complaint-draft':
     case 'ai-recommendations':
     case 'government-tracker':

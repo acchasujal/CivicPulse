@@ -1,9 +1,11 @@
 # CivicPulse 🏛️⚡
 > **Active Civic Accountability Engine**
 
-[![Demo Video](https://img.shields.io/badge/Demo-Watch%20Video-red?style=for-the-badge&logo=youtube)](https://youtu.be/dummy-link)
-[![Google Cloud Run](https://img.shields.io/badge/Google%20Cloud-Run-blue?style=for-the-badge&logo=google-cloud)](https://cloud.google.com/run)
-[![Gemini Powered](https://img.shields.io/badge/Gemini-3.5%20Flash-orange?style=for-the-badge&logo=google-gemini)](https://deepmind.google/technologies/gemini/)
+<p align="center">
+  <img src="https://img.shields.io/badge/Demo-Watch%20Video-red?style=for-the-badge&logo=youtube" alt="Demo Video" />
+  <img src="https://img.shields.io/badge/Google%20Cloud-Run-blue?style=for-the-badge&logo=google-cloud" alt="Google Cloud Run" />
+  <img src="https://img.shields.io/badge/Gemini-3.5%20Flash-orange?style=for-the-badge&logo=google-gemini" alt="Gemini Powered" />
+</p>
 
 CivicPulse converts citizen-submitted photos of infrastructure failures into verified, clustered evidence trails and sendable legal dispatches — bypassing passive administrative queues to compel municipal response.
 
@@ -39,9 +41,11 @@ Traditional civic engagement apps are merely **passive dashboards**. Citizens up
 
 ---
 
-## 🧠 4. AI Pipeline (5-Agent Architecture)
+## 🧠 4. AI Pipeline & System Architecture
 
-CivicPulse runs on a structured **Observe ➔ Reason ➔ Create ➔ Act** agentic workflow:
+CivicPulse runs on a structured **Observe ➔ Reason ➔ Create ➔ Act** agentic workflow. Below is the multi-agent processing pipeline:
+
+<div align="center">
 
 ```mermaid
 graph TD
@@ -54,7 +58,17 @@ graph TD
     G -->|Approve & Dispatch| H{Agent 5: Escalation}
     H -->|Primary Dispatch| I[SendGrid Email API]
     H -->|Secondary Fallback| J[ReportLab PDF Generation]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#f96,stroke:#333,stroke-width:2px
+    style D fill:#dfd,stroke:#333,stroke-width:2px
+    style E fill:#fdd,stroke:#333,stroke-width:2px
+    style F fill:#dff,stroke:#333,stroke-width:2px
+    style H fill:#ffd,stroke:#333,stroke-width:2px
 ```
+
+</div>
 
 ### The 5-Agent Breakdown:
 1. **Agent 1: Visual Intake Classifier (Gemini Multimodal)**: Scans raw photos to extract category, severity (1-5), description, and calculates a visual credibility score.
@@ -65,7 +79,7 @@ graph TD
 
 ---
 
-## 🏛️ 5. Technology Stack & Google Cloud Services
+## 🏛/☁️ 5. Technology Stack & Google Cloud Services
 
 ### Tech Stack
 * **Frontend**: React 19 (TypeScript), Vite, Tailwind CSS, TanStack Query, Framer Motion, Lucide Icons.
@@ -81,12 +95,12 @@ graph TD
 
 ---
 
-## 🔑 6. Demo Credentials & Setup
+## 🔑 6. Setup & Execution
 
-### Demo Credentials
-* **Role**: Auditor / Judge Evaluation
-* **Access URL**: `http://localhost:5173` (Local) / Cloud Run URL
-* **Demo Scenarios**: Included on the intake page dropdown to load preset reports instantly.
+### Prerequisites
+* Python 3.11+
+* Node 18+
+* A Gemini API key (Google AI Studio)
 
 ### Local Setup
 #### Backend Setup
@@ -109,37 +123,35 @@ npm run dev
 
 ---
 
-## ☁️ 7. Production Deployment (Google Cloud Run)
-The application is configured to deploy as a unified Docker container to Google Cloud Run, building React assets and routing them through FastAPI's catch-all SPA router:
-```bash
-# Build and deploy image
-gcloud builds submit --config=cloudbuild.yaml --substitutions=_SENDGRID_FROM_EMAIL="your-verified-sender@example.com"
+## ⏱️ 7. 5-Minute Judge Walkthrough (Step-by-Step)
 
-# Update service environment variables
-gcloud run services update civicpulse --region us-central1 --update-env-vars="APP_BASE_URL=https://your-cloud-run-url.run.app"
-```
+This step-by-step walkthrough is designed for evaluators to review the end-to-end flow using the passive **Evaluation Guide**:
 
----
-
-## ⏱️ 8. Demo Flow (5-Minute Evaluation Guide)
-
-The platform is designed to be evaluated live in under 5 minutes:
-
-* **Phase 1: Submit Report (60s)**: Choose a demo scenario from the intake dropdown to load verified coordinates and photo, then click "Submit to Operations Center".
-* **Phase 2: Watch AI Verification (60s)**: View the Gemini multimodal verification classifier processing attributes and checking visual integrity.
-* **Phase 3: Platform Intelligence (60s)**: Open the Tracker/Operations Center, review the transparency metrics, ward patterns, GIS map, and silence ledger.
-* **Phase 4: Complaint Workspace (60s)**: Inspect a case file, review the AI decision timeline and the automatically compiled RTI applications.
-* **Phase 5: Dispatch & Accountability (60s)**: Authorize a draft, trigger Email Dispatch, review real-time API logs, or generate a PDF package.
+1. **Step 1: Choose a Demo Scenario (Intake Page)**
+   - Click the dropdown at the top and select a scenario (e.g. *Andheri East Junction - Open Garbage Pile*). This populates verified GPS coordinates and photo evidence instantly.
+2. **Step 2: Upload Evidence & Submit**
+   - Click "Submit to Operations Center". The intake card transitions to show the multimodal classifier extracting attributes and analyzing visual credibility.
+3. **Step 3: Access Platform Intelligence (Operations Center)**
+   - Navigate to the **Tracker** page. View the live transparency metrics, ward patterns, GIS map, and silence ledger tracking response delays.
+4. **Step 4: Audit AI Verification (Case File)**
+   - Click the newly created/merged report on the list. In Section 02, inspect the **AI Decision Timeline** showing visual deduplication and duplicate detection metrics.
+5. **Step 5: Review Action Drafts & Dispatch**
+   - Scroll down to Section 05: **Accountability Action Drafts**. Click **Authorize** to trigger the SendGrid External Dispatch and view real-time API logs, or click **Generate PDF** to download the physical complaint package.
 
 ---
 
-## 💡 9. Innovation & Future Scope
+## 🏅 8. Judging Criteria Mapping
 
-### Innovation
-* **Passive Evaluation Guide**: Built-in non-blocking tour that dynamically assists auditors and tracks completed steps in real time.
-* **Explainable Trust Models**: Every agent decision maps raw inputs to deterministic logic gates before proceeding.
+| Judging Criterion | How CivicPulse Satisfies It |
+|:---|:---|
+| **GenAI Execution & Complexity** | Implements a **5-agent reasoning pipeline** with strict JSON schemas, multimodal classifier modeling, geo-spatial clustering, and automated draft compilation. |
+| **Real-world Impact** | Bypasses passive municipal ticket queues by leveraging **Right to Information (RTI) legal dispatches** to legally compel maintenance and budget transparency. |
+| **Technical Integration** | Integrates Google Gemini Vision, Google Maps GIS APIs, FastAPI with WALSQLite, SendGrid HTTP APIs, and ReportLab PDF compilation. |
+| **UX & Product Polish** | Features a passive **Evaluation Guide** that auto-completes steps, collision-aware tooltip card layouts, and complete community verification loops. |
 
-### Future Scope
+---
+
+## 🔮 9. Future Scope
 * **Cloud SQL Migration**: Transition SQLite to Cloud SQL PostgreSQL.
 * **Citizen Verification Votes**: Decentralized consensus layers to corroborate resolved reports.
 * **Government Webhook Integrations**: Native webhook channels to post directly to municipal ticketing networks.
