@@ -2,9 +2,19 @@
 
 > **The problem isn't that citizens can't report civic issues. It's that nothing happens after they do.**
 
+![CivicPulse](docs/assets/civicpulse-hero.png)
+
 CivicPulse is an AI-powered civic accountability platform that transforms verified citizen-submitted infrastructure evidence into structured community intelligence, actionable government-ready documents, and transparent escalation workflows.
 
 Instead of generating another ticket number, CivicPulse helps citizens build evidence that is difficult to ignore.
+
+## Live Links
+
+🌐 **Live Demo**  
+https://civicpulse-89026185279.us-central1.run.app/
+
+📄 **Project Description**  
+https://docs.google.com/document/d/1hWUT76pNRuKSaGgoruwX7dj_d7txXO5UQVcaR2jI2OI/edit?usp=sharing
 
 ---
 
@@ -41,6 +51,10 @@ The platform:
 The result is not simply another complaint—it is a structured accountability workflow.
 
 ---
+
+##  Citizen Journey
+
+![Citizen Journey](docs/assets/user-journey.png)
 
 # End-to-End Workflow
 
@@ -153,6 +167,10 @@ Every dispatch is logged for transparency.
 Each stage has a clearly defined responsibility and produces structured outputs for the next stage.
 
 ---
+## Architecture Overview
+
+![Technical Architecture](docs/assets/technical-architecture.png)
+
 
 # Architecture
 
