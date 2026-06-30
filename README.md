@@ -56,34 +56,6 @@ The result is not simply another complaint—it is a structured accountability w
 
 ![Citizen Journey](docs/assets/user-journey.png)
 
-# End-to-End Workflow
-
-```
-Citizen Upload
-      │
-      ▼
-Stage-0 Evidence Validation
-      │
-      ▼
-Issue Classification
-      │
-      ▼
-Community Clustering
-      │
-      ▼
-Impact Assessment
-      │
-      ▼
-Complaint & RTI Drafting
-      │
-      ▼
-Citizen Approval
-      │
-      ▼
-Government Escalation
-```
-
----
 
 # Key Features
 
@@ -171,44 +143,6 @@ Each stage has a clearly defined responsibility and produces structured outputs 
 
 ![Technical Architecture](docs/assets/civicpulse-architecture.png)
 
-
-# Architecture
-
-```
-Citizen
-   │
-   ▼
-Photo + Location
-   │
-   ▼
-Stage-0 Validation
-(Local + AI Validation)
-   │
-   ├── Reject
-   │
-   ▼
-Issue Classification
-   │
-   ▼
-Spatial Verification
-   │
-   ▼
-Community Cluster
-   │
-   ▼
-Impact Analysis
-   │
-   ▼
-Complaint & RTI Generation
-   │
-   ▼
-Citizen Approval
-   │
-   ▼
-Government Escalation
-```
-
----
 
 # Google Technologies
 
