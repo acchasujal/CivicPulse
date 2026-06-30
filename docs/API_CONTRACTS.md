@@ -172,3 +172,42 @@ If `method=email` fails but `AGENT5_PDF_FALLBACK=true` is set:
 Check the real status of a sent escalation.
 
 **Success Response — 200:** escalation object as above.
+
+---
+
+## POST `/whatsapp/webhook`
+Twilio WhatsApp webhook. Receives all incoming WhatsApp messages from the configured number.
+
+> **Note:** This endpoint is gated by `WHATSAPP_ENABLED=true`. When disabled, returns `503`.
+
+**Provider:** Twilio (sandbox for development). Architecture is provider-agnostic — only the adapter helpers in `whatsapp.py` are provider-specific.
+
+**Request** (Twilio `application/x-www-form-urlencoded`)
+
+| Field | Description |
+|---|---|
+| `From` | WhatsApp number of the sender (e.g. `whatsapp:+919876543210`) |
+| `Body` | Text body of the message |
+| `NumMedia` | Number of media attachments |
+| `MediaUrl0` | URL of the first media attachment (if image) |
+| `MediaContentType0` | MIME type of the media |
+| `Latitude` / `Longitude` | Present when user shares their location |
+
+**Response — 200** (always, Twilio requirement)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>Response text to send to the user</Message>
+</Response>
+```
+
+**Conversation steps:**
+1. User sends `Hi` → welcome message + instructions
+2. User sends photo → photo stored, prompt for location
+3. User shares location → location stored, prompt for description
+4. User sends description or `skip` → calls `issue_service.create_issue_from_bytes()` → returns Case ID + dashboard link
+
+**Stage-0 rejection:** If Gemini rejects the photo, the bot explains why, shows accepted examples, and resets to step 1 to allow retry.
+
+**Headers required:**
+- `X-Twilio-Signature` — validated against `TWILIO_AUTH_TOKEN`. Requests without a valid signature return 403.

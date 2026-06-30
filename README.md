@@ -284,6 +284,58 @@ npm run dev
 
 ---
 
+# Access Anywhere
+
+CivicPulse supports multiple reporting channels that all share the same backend pipeline.
+
+| Channel | Status | Purpose |
+|---------|--------|--------|
+| Web App | ✅ Primary | Full dashboard: submit, track, approve, escalate |
+| WhatsApp | ✅ Available | Fast mobile reporting — photo + location = case filed |
+| Mobile App | 🔜 Planned | Native app for iOS and Android |
+
+The web app is the complete experience. WhatsApp is a lightweight reporting channel — citizens can submit evidence without opening a browser. All processing runs through the same backend: Stage-0 Validation → Agent Pipeline → Community Clustering → Accountability Drafts.
+
+```
+Citizen
+ ├── 🌐 Web (full dashboard)
+ ├── 💬 WhatsApp (fast reporting)
+ └── 📱 Mobile App (future)
+          │
+          ▼
+ Shared Issue Service
+          │
+ Stage-0 Validation
+          │
+ AI Pipeline (Agents 1–5)
+          │
+ Database
+          │
+ Human Approval
+          │
+ Government Escalation
+```
+
+**Multiple channels. One backend.**
+
+### Technical Notes
+
+- Current implementation uses **Twilio WhatsApp Sandbox** for development.
+- Architecture is provider-agnostic. Migrating to Meta Cloud API requires changing only the adapter helpers in `whatsapp.py`.
+- The WhatsApp channel is gated by `WHATSAPP_ENABLED=true` in the environment.
+
+### Upcoming WhatsApp Improvements
+
+The next evolution focuses on making WhatsApp significantly more natural and accessible while keeping the same backend pipeline unchanged. These are planned improvements — **not yet implemented**:
+
+1. **Multilingual conversations** — Hindi, Tamil, Marathi, and other Indian languages
+2. **Voice reporting** — send a voice note describing the issue
+3. **Repair verification** — send a follow-up photo when the issue is fixed
+4. **Smart notifications** — proactive updates when your case advances
+5. **Accessibility improvements** — richer formatting for screen readers
+
+---
+
 # Future Vision
 
 Potential future enhancements include:

@@ -7,6 +7,7 @@ import { PhotoPreview } from '@/components/issue/PhotoPreview';
 import { LocationPicker } from '@/components/issue/LocationPicker';
 import { AgentTimeline } from '@/components/timeline/AgentTimeline';
 import { ErrorState } from '@/components/feedback/ErrorState';
+import { WhatsAppReportBanner } from '@/components/issue/WhatsAppReportBanner';
 import { useCreateIssue } from '@/api/queries';
 import { AlertCircle, FileText, CheckCircle2, ArrowRight, ArrowLeft, Send, Sparkles, MapPin, Landmark } from 'lucide-react';
 import axios from 'axios';
@@ -596,6 +597,9 @@ export const IntakePage: React.FC = () => {
                       <PhotoUploader onCapture={handlePhotoCapture} />
                     )}
                   </div>
+
+                  {/* WhatsApp alternative entry point — visible immediately in Step 1 */}
+                  <WhatsAppReportBanner className="mt-3" />
 
                   {fieldErrors.photo && (
                     <div className="flex items-center gap-1.5 text-xs text-rose-700 font-bold select-none mt-2">

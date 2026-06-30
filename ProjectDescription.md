@@ -26,6 +26,7 @@ CivicPulse is an active civic accountability platform that converts raw photo up
 - **Evidence Over Invention**: Unlike other systems that fabricate municipal ward scores or officer performance rankings (which collapse under judge questioning), CivicPulse computes everything deterministically from real evidence (e.g., active cluster density and verified wait days).
 - **Draft, Not Authority**: Generated documents are clearly marked as AI drafts with mandatory disclaimers, preserving legal accountability.
 - **Single-Call Merged Analysis**: Merges Agent 3 and Agent 4 generation into a single structural Gemini API call to reduce latency and execution cost in production.
+- **Multi-Channel Architecture**: WhatsApp is a lightweight reporting channel sharing the same backend pipeline as the web app. A shared `issue_service` ensures there is exactly one implementation of Stage-0 Validation and the AI pipeline — no duplicated logic, no internal network calls.
 
 ---
 

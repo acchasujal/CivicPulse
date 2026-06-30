@@ -18,6 +18,13 @@ class Settings(BaseSettings):
     AGENT5_PDF_FALLBACK: bool = True
     APP_BASE_URL: str = ""
 
+    # WhatsApp channel (Twilio Sandbox for development; Meta Cloud API in production)
+    # Set WHATSAPP_ENABLED=true and supply Twilio credentials to activate.
+    WHATSAPP_ENABLED: bool = False
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_WHATSAPP_NUMBER: str = ""  # e.g. whatsapp:+14155238886 (Twilio sandbox)
+
     @property
     def threshold(self) -> int:
         if self.DEMO_THRESHOLD_OVERRIDE is not None:

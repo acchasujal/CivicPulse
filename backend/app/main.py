@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.db import init_db
-from app.routers import issues, clusters, impact, actions, escalations
+from app.routers import issues, clusters, impact, actions, escalations, whatsapp
 
 # Configure logging
 logging.basicConfig(
@@ -26,6 +26,10 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing database...")
     init_db()
     logger.info("Database initialized successfully.")
+    if settings.WHATSAPP_ENABLED:
+        logger.info("WhatsApp channel: ENABLED (Twilio sandbox)")
+    else:
+        logger.info("WhatsApp channel: DISABLED (set WHATSAPP_ENABLED=true to activate)")
     yield
     # Shutdown logic (if any)
     logger.info("Shutting down application...")
@@ -56,6 +60,7 @@ app.include_router(clusters.router, prefix="/api")
 app.include_router(impact.router, prefix="/api")
 app.include_router(actions.router, prefix="/api")
 app.include_router(escalations.router, prefix="/api")
+app.include_router(whatsapp.router, prefix="/api")
 
 # Dynamic frontend dist directory resolution
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
