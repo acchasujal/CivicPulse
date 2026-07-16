@@ -25,11 +25,8 @@ async def analyze_issue_photo(
     if user_note:
         prompt += f"\nUser Note: {user_note}"
 
-    system_instruction = (
-        "You are Agent 1 (Issue Understanding) for CivicPulse. Analyze the provided image of a civic issue. "
-        "Provide a structured classification. Assess the severity (1-5), describe the issue in <= 280 characters, "
-        "and calculate a credibility score (0.0-1.0) based strictly on image quality, clarity, and classification confidence."
-    )
+    from app.utils.prompts import load_prompt
+    system_instruction = load_prompt("agent_1_system.txt")
 
     return await gemini_client.generate_structured_output(
         prompt=prompt,

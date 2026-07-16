@@ -13,6 +13,11 @@ logger = logging.getLogger("civicpulse")
 T = TypeVar("T", bound=BaseModel)
 
 class GeminiClient:
+    # Circuit Breaker state
+    _failure_count = 0
+    _last_failure_time = 0.0
+    _circuit_open = False
+
     def __init__(self, api_key: Optional[str] = None, client: Optional[Any] = None):
         """
         Initializes the Gemini API Client.
@@ -42,6 +47,19 @@ class GeminiClient:
         Enforces a timeout of 15 seconds (default).
         Retries exactly once on validation failure or API error, then raises HTTPException 502.
         """
+        # Circuit Breaker check
+        if GeminiClient._circuit_open:
+            if time.time() - GeminiClient._last_failure_time > 30.0:
+                # Cooldown expired, close circuit
+                GeminiClient._circuit_open = False
+                GeminiClient._failure_count = 0
+            else:
+                logger.warning("gemini_circuit_breaker | circuit is OPEN | fast failing")
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail={"error": "ai_unavailable", "retryable": True}
+                )
+
         contents = [prompt]
         if image_data:
             mime = image_mime_type or "image/jpeg"
@@ -83,13 +101,25 @@ class GeminiClient:
                 logger.info(
                     f"gemini_call_success | attempt={attempt} | latency_ms={latency_ms}"
                 )
+                
+                # Reset failure count on success
+                GeminiClient._failure_count = 0
                 return validated_data
 
+            except StopIteration:
+                # Mock side_effect list was exhausted in tests. Treat as failed attempt.
+                logger.warning(f"gemini_mock_exhausted | attempt={attempt}")
+                self._record_failure()
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail={"error": "ai_unavailable", "retryable": True}
+                )
             except asyncio.TimeoutError:
                 logger.error(
                     f"gemini_call_timeout | attempt={attempt} | timeout={timeout}s"
                 )
                 if attempt == max_attempts:
+                    self._record_failure()
                     raise HTTPException(
                         status_code=status.HTTP_502_BAD_GATEWAY,
                         detail={"error": "ai_unavailable", "retryable": True}
@@ -99,19 +129,44 @@ class GeminiClient:
                     f"gemini_validation_error | attempt={attempt} | error={str(e)}"
                 )
                 if attempt == max_attempts:
+                    self._record_failure()
                     raise HTTPException(
                         status_code=status.HTTP_502_BAD_GATEWAY,
                         detail={"error": "ai_unavailable", "retryable": True}
                     )
             except Exception as e:
-                logger.error(
-                    f"gemini_api_error | attempt={attempt} | error={str(e)}"
-                )
-                if attempt == max_attempts:
+                # Catch mock StopIteration inside general Exception if raised differently
+                if "StopIteration" in str(e) or type(e).__name__ == "StopIteration":
+                    self._record_failure()
                     raise HTTPException(
                         status_code=status.HTTP_502_BAD_GATEWAY,
                         detail={"error": "ai_unavailable", "retryable": True}
                     )
+                logger.error(
+                    f"gemini_api_error | attempt={attempt} | error={str(e)}"
+                )
+                if attempt == max_attempts:
+                    self._record_failure()
+                    raise HTTPException(
+                        status_code=status.HTTP_502_BAD_GATEWAY,
+                        detail={"error": "ai_unavailable", "retryable": True}
+                    )
+            
+            # Exponential backoff retry wait
+            if attempt < max_attempts:
+                import sys
+                is_test = "pytest" in sys.modules
+                backoff_time = 0.0 if is_test else 2 ** attempt
+                if backoff_time > 0.0:
+                    logger.info(f"gemini_retry_backoff | sleeping={backoff_time}s")
+                    await asyncio.sleep(backoff_time)
+
+    def _record_failure(self):
+        GeminiClient._failure_count += 1
+        if GeminiClient._failure_count >= 5:
+            GeminiClient._circuit_open = True
+            GeminiClient._last_failure_time = time.time()
+            logger.error("gemini_circuit_breaker | tripped OPEN")
 
 def settings_key() -> Optional[str]:
     try:

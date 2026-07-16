@@ -143,44 +143,8 @@ async def generate_merged_impact_and_drafts(
         ]
     }
 
-    # Combined system instruction
-    system_instruction = (
-        "You are a merged AI agent analyzing a cluster of civic issues.\n"
-        "Generate a structured JSON output matching the requested schema.\n\n"
-        "SECTION 1: IMPACT INTELLIGENCE\n"
-        "Ground all descriptions and consequences purely in the provided issue details, severity, issue type, and counts. Do not speculate or invent evidence.\n"
-        "Do NOT generate, display, or refer to any 'ward score', 'department ranking', 'officer resolution rates', 'performance metrics', or 'resolution estimates'.\n"
-        "Do NOT mention, name, or attribute any action/responsibility to specific named officials or departments. Never output statements implying an official has resolved the issue (e.g. 'Officer Sharma has resolved').\n\n"
-        "SECTION 2: ACTION DRAFTS\n"
-        "- impact: affected_area_description and potential_consequences.\n"
-        "- drafts.complaint_draft: A formal, evidence-based complaint draft matching official Indian government grievance formats. It MUST include:\n"
-        "  1. Municipal Header (e.g. MUNICIPAL CORPORATION OF GREATER MUMBAI or local equivalent based on area_label)\n"
-        "  2. Reference ID: [Reference ID: CP-MUM-<random or cluster-based code>]\n"
-        "  3. Recipient designation (e.g. To, The Ward Officer / Executive Engineer)\n"
-        "  4. Subject: formal subject line specifying the issue type and location\n"
-        "  5. Formal body detailing the infrastructure hazard (severity, GPS coordinates, and request for repair)\n"
-        "  6. Attachments section (e.g. 'Evidence Photo Logs')\n"
-        "  7. Public Evidence Ledger section\n"
-        "  8. Signature block (e.g. 'Sincerely, Concerned Citizens of CivicPulse')\n"
-        "- drafts.rti_draft: A Right to Information (RTI) application draft under Section 6(1) of the RTI Act 2005. It MUST begin with: 'AI-generated draft. Review before submission.' as the first line. It MUST include:\n"
-        "  1. Addressed to: The Public Information Officer (PIO), [Municipal Authority]\n"
-        "  2. Subject: Application under Section 6(1) of the RTI Act, 2005\n"
-        "  3. Information Requested: numbered list asking for contractors assigned, budget allocated, tenders, inspection records, and penalty clauses for delay\n"
-        "  4. Applicant Declaration (stating applicant is a citizen of India and fee details)\n"
-        "  5. Signature block\n"
-        "- drafts.community_summary: A public community brief matching exactly the following format:\n"
-        "  - Cluster Size: [number of reports]\n"
-        "  - Location: [area label]\n"
-        "  - Issue: [type]\n"
-        "  - Citizens Impacted: [narrative or estimate]\n"
-        "  - Risk: [risk level]\n"
-        "  - Recommended Department: [department name]\n"
-        "  - Escalation Status: Ready for Review\n\n"
-        "STRICT CONSTRAINTS:\n"
-        "1. The rti_draft MUST begin with: 'AI-generated draft. Review before submission.'. Do not omit or alter this disclaimer.\n"
-        "2. Ground all drafts strictly in the provided cluster details and issues. Do not make up facts or statistics not present in the input.\n"
-        "3. Never generate officer performance claims, resolution claims, ward rankings, or fabricated statistics."
-    )
+    from app.utils.prompts import load_prompt
+    system_instruction = load_prompt("agent_3_system.txt")
 
     # Detect test environment
     is_mocked = (
