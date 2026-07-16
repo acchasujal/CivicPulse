@@ -9,7 +9,7 @@ class ImpactSummary(SQLModel, table=True):
     __tablename__ = "impact_summaries"
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
-    cluster_id: str = Field(foreign_key="clusters.id")
+    cluster_id: str = Field(foreign_key="clusters.id", index=True)
     affected_area_description: str
     potential_consequences: str
     risk_level: str

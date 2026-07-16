@@ -12,7 +12,7 @@ class ActionDraft(SQLModel, table=True):
     __tablename__ = "action_drafts"
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
-    cluster_id: str = Field(foreign_key="clusters.id")
+    cluster_id: str = Field(foreign_key="clusters.id", index=True)
     draft_type: str
     content: str
     status: str = Field(default="pending_review")

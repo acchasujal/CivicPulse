@@ -19,7 +19,7 @@ class Issue(SQLModel, table=True):
     severity: int
     description: str
     credibility_score: float
-    cluster_id: Optional[str] = Field(default=None, foreign_key="clusters.id", nullable=True)
+    cluster_id: Optional[str] = Field(default=None, foreign_key="clusters.id", nullable=True, index=True)
     status: str = Field(default="classified")
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"))
 

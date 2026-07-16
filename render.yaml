@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: civicpulse-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHONPATH
+        value: backend
+      - key: DATABASE_URL
+        fromDatabase:
+          name: civicpulse-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+
+databases:
+  - name: civicpulse-db
+    plan: free

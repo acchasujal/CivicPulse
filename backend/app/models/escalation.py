@@ -11,7 +11,7 @@ class Escalation(SQLModel, table=True):
     __tablename__ = "escalations"
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
-    draft_id: str = Field(foreign_key="action_drafts.id")
+    draft_id: str = Field(foreign_key="action_drafts.id", index=True)
     method: str
     recipient: Optional[str] = Field(default=None, nullable=True)
     status: str
