@@ -276,3 +276,78 @@ See `DEMO_ARCHITECTURE.md` for full demo strategy. Summary of architecture-level
 - `DEMO_THRESHOLD_OVERRIDE` env var sets ESCALATION_THRESHOLD=1 in demo mode. This does not change any agent logic — it only changes when Agent 4 triggers.
 - Demo seeding script populates 6–8 pre-classified issues across 2 clusters before any live demo run. See `DEMO_DATA_SPEC.md`.
 - Agent 5 attempts email first. If SendGrid HTTP call fails and AGENT5_PDF_FALLBACK=true, PDF export runs automatically as the fallback action. A single escalation row is written reflecting the final status ("exported") with SendGrid's failure message captured in provider_response. The demo can show either outcome.
+
+---
+
+## Database Schema
+
+Database engine: PostgreSQL (production) / SQLite (local development).
+
+### 1. `issues` table
+- `id` (UUID, PK)
+- `photo_url` (TEXT)
+- `latitude` (FLOAT), `longitude` (FLOAT)
+- `user_note` (TEXT, nullable)
+- `issue_type` (TEXT) - `road_damage`, `lighting`, `water`, `waste`, `other`
+- `severity` (INTEGER, 1-5)
+- `description` (TEXT)
+- `credibility_score` (FLOAT, 0.0-1.0)
+- `cluster_id` (UUID, FK -> `clusters.id`, indexed, nullable)
+- `status` (TEXT) - `classified`, `clustered`, `drafted`, `escalated`
+- `created_at` (TIMESTAMP)
+
+### 2. `clusters` table
+- `id` (UUID, PK)
+- `area_label` (TEXT)
+- `center_lat` (FLOAT), `center_lng` (FLOAT)
+- `report_count` (INTEGER)
+- `first_reported_at` (TIMESTAMP), `last_reported_at` (TIMESTAMP)
+
+### 3. `impact_summaries` table
+- `id` (UUID, PK)
+- `cluster_id` (UUID, FK -> `clusters.id`, indexed)
+- `affected_area_description` (TEXT)
+- `potential_consequences` (TEXT)
+- `risk_level` (TEXT) - `low`, `moderate`, `high`
+- `evidence_count` (INTEGER)
+- `generated_at` (TIMESTAMP)
+
+### 4. `action_drafts` table
+- `id` (UUID, PK)
+- `cluster_id` (UUID, FK -> `clusters.id`, indexed)
+- `draft_type` (TEXT) - `complaint`, `rti`, `community_summary`
+- `content` (TEXT)
+- `status` (TEXT) - `pending_review`, `approved`, `rejected`
+- `created_at` (TIMESTAMP), `reviewed_at` (TIMESTAMP, nullable)
+
+### 5. `escalations` table
+- `id` (UUID, PK)
+- `draft_id` (UUID, FK -> `action_drafts.id`, indexed)
+- `method` (TEXT) - `email`, `pdf_export`
+- `recipient` (TEXT, nullable)
+- `status` (TEXT) - `sent`, `failed`, `exported`
+- `provider_response` (TEXT, nullable)
+- `sent_at` (TIMESTAMP, nullable), `created_at` (TIMESTAMP)
+
+---
+
+## API Endpoints
+
+All responses default to standard JSON envelopes.
+
+### Public Issues API
+- **POST `/api/issues`**: Submit a new issue report. Accepts `photo` file, `latitude`, `longitude`, and `user_note` (multipart/form-data). Triggers Agent 1 and Agent 2 synchronously. Protected by Token-Bucket rate limiting.
+- **GET `/api/issues`**: List all issues. Query parameters: `cluster_id`, `limit`.
+- **GET `/api/issues/{id}`**: Get issue detail, associated cluster, impact summary, and drafts.
+
+### Clusters API
+- **GET `/api/clusters/{id}`**: Get cluster detail.
+- **POST `/api/clusters/{id}/impact`**: Manually (re)trigger Agent 3 for a cluster.
+- **POST `/api/clusters/{id}/generate-drafts`**: Manually (re)trigger Agent 4 for a cluster.
+
+### Action Drafts API
+- **PATCH `/api/action-drafts/{id}`**: Approve or reject a draft (`status: approved | rejected`).
+
+### Escalation API
+- **POST `/api/escalations`**: Trigger Agent 5. Requires draft to be approved. Dispatches SendGrid email or generates PDF.
+- **GET `/api/escalations/{id}`**: Get escalation status and provider response log.
