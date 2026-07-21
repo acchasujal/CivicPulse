@@ -2,7 +2,7 @@ import React from 'react';
 import { LocationPicker, type LocationCoordinates } from '../../../design-system/primitives/forms/LocationPicker';
 
 export interface LocationConfirmStepProps {
-  location: LocationCoordinates;
+  location: LocationCoordinates | null;
   onChangeLocation: (coords: LocationCoordinates) => void;
 }
 

@@ -12,7 +12,7 @@ export interface LocationCoordinates {
 
 export interface LocationPickerProps {
   label?: string;
-  value?: LocationCoordinates;
+  value?: LocationCoordinates | null;
   onChange?: (coords: LocationCoordinates) => void;
   className?: string;
 }
@@ -23,9 +23,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   onChange,
   className,
 }) => {
-  const [coords, setCoords] = useState<LocationCoordinates>(
-    value || { latitude: 28.6139, longitude: 77.2090, locality: 'Connaught Place, New Delhi' }
-  );
+  const [coords, setCoords] = useState<LocationCoordinates | null>(value || null);
   const [isLocating, setIsLocating] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -70,10 +68,10 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             </div>
             <div>
               <h4 className="text-sm font-semibold text-neutral-900">
-                {coords.locality || 'Specified Location'}
+                {coords?.locality || 'No location selected'}
               </h4>
               <p className="text-xs font-mono text-neutral-700 mt-0.5">
-                Lat: {coords.latitude} | Lng: {coords.longitude}
+                {coords ? `Lat: ${coords.latitude} | Lng: ${coords.longitude}` : 'Use Locate Me to add coordinates'}
               </p>
             </div>
           </div>
@@ -116,6 +114,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                 size="sm"
                 onClick={() => {
                   if (searchQuery.trim()) {
+                    if (!coords) return;
                     const updated = { ...coords, locality: searchQuery };
                     setCoords(updated);
                     onChange?.(updated);

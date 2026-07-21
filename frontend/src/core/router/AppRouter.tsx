@@ -56,14 +56,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'evaluate',
-        element: (
-          <Suspense fallback={<SuspenseFallback label="Loading evaluation mode..." />}>
-            <EvaluationPage />
-          </Suspense>
-        ),
-      },
-      {
         path: 'report',
         element: (
           <Suspense fallback={<SuspenseFallback label="Loading report form..." />}>
@@ -153,6 +145,16 @@ const router = createBrowserRouter([
           <Suspense fallback={<SuspenseFallback label="Loading admin console..." />}>
             <AdminPage />
           </Suspense>
+        ),
+      },
+      {
+        path: 'evaluate',
+        element: (
+          <ProtectedRoute allowedRoles={['auditor', 'admin']} requiredFeatureFlag="enableInternalEvaluation">
+            <Suspense fallback={<SuspenseFallback label="Loading evaluation mode..." />}>
+              <EvaluationPage />
+            </Suspense>
+          </ProtectedRoute>
         ),
       },
     ],

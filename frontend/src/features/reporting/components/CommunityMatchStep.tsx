@@ -4,10 +4,11 @@ import { RadioGroup } from '../../../design-system/primitives/forms/RadioGroup';
 
 export interface CommunityMatchStepProps {
   locality: string;
+  matchCount?: number;
   onSelectOption: (choice: 'join' | 'new') => void;
 }
 
-export const CommunityMatchStep: React.FC<CommunityMatchStepProps> = ({ locality, onSelectOption }) => {
+export const CommunityMatchStep: React.FC<CommunityMatchStepProps> = ({ locality, matchCount, onSelectOption }) => {
   const [choice, setChoice] = useState<'join' | 'new'>('new');
 
   const handleChange = (val: string) => {
@@ -19,9 +20,11 @@ export const CommunityMatchStep: React.FC<CommunityMatchStepProps> = ({ locality
   return (
     <div className="space-y-4 font-sans">
       <CommunityMatch
-        matchCount={3}
+        matchCount={matchCount}
         locality={locality}
-        explanation="3 nearby reports for road & drainage damage have been recorded within 100 meters of your location in the last 48 hours. Grouping increases municipal escalation priority."
+        explanation={matchCount
+          ? `${matchCount} nearby reports may belong to the same local issue.`
+          : 'Nearby reports will be checked when this report is submitted. You can choose to keep this evidence as a separate case.'}
       />
 
       <RadioGroup

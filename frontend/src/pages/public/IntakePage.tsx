@@ -45,8 +45,17 @@ export const IntakePage: React.FC = () => {
 
     if (state.step === 5) {
       // Final submission trigger
+      if (!state.consented) {
+        showToast('Please review and approve the report before submitting.', 'warning');
+        return;
+      }
+
+      if (state.latitude === null || state.longitude === null) {
+        showToast('Please confirm the incident location before submitting.', 'warning');
+        return;
+      }
+
       if (!isOnline) {
-        // Save to offline queue
         saveDraft({
           title: `${state.issueType.replace('_', ' ')} Report`,
           category: state.issueType,
@@ -56,8 +65,8 @@ export const IntakePage: React.FC = () => {
             user_note: state.userNote,
           },
         });
-        showToast('Saved to local offline queue. Will dispatch when back online.', 'info');
-        updateState({ createdIssueId: `OFFLINE-${Date.now()}` });
+        showToast('Saved on this device. Automatic offline submission is not available yet.', 'info');
+        updateState({ createdIssueId: null });
         nextStep();
         return;
       }
@@ -71,7 +80,7 @@ export const IntakePage: React.FC = () => {
           user_note: state.userNote,
         });
         updateState({ createdIssueId: created.id });
-        showToast('Report successfully dispatched to public ledger!', 'success');
+        showToast('Report submitted for review.', 'success');
         nextStep();
       } catch (err: any) {
         showToast(err?.message || 'Failed to submit report. Please try again.', 'danger');
@@ -127,7 +136,9 @@ export const IntakePage: React.FC = () => {
             onChangeAltText={(alt) => updateState({ altText: alt })}
           />
           <LocationConfirmStep
-            location={{ latitude: state.latitude, longitude: state.longitude, locality: state.locality }}
+            location={state.latitude !== null && state.longitude !== null
+              ? { latitude: state.latitude, longitude: state.longitude, locality: state.locality }
+              : null}
             onChangeLocation={(coords) =>
               updateState({
                 latitude: coords.latitude,
@@ -149,7 +160,7 @@ export const IntakePage: React.FC = () => {
       {state.step === 4 && (
         <CommunityMatchStep
           locality={state.locality}
-          onSelectOption={() => {}}
+          onSelectOption={(communityChoice) => updateState({ communityChoice })}
         />
       )}
 
@@ -158,14 +169,15 @@ export const IntakePage: React.FC = () => {
           issueType={state.issueType}
           locality={state.locality}
           userNote={state.userNote}
-          onConsentChange={() => {}}
+          onConsentChange={(consented) => updateState({ consented })}
         />
       )}
 
       {state.step === 6 && (
         <SubmissionSuccessStep
-          caseId={state.createdIssueId || 'CP-2026-9041'}
-          onTrackCase={() => navigate(`/issue/${state.createdIssueId || 'CP-2026-9041'}`)}
+          caseId={state.createdIssueId}
+          mode={state.createdIssueId ? 'dispatched' : 'queued'}
+          onTrackCase={() => state.createdIssueId ? navigate(`/issue/${state.createdIssueId}`) : navigate('/my-reports')}
         />
       )}
     </ReportFlowLayout>

@@ -17,7 +17,7 @@ export const HumanApprovalStep: React.FC<HumanApprovalStepProps> = ({
   userNote,
   onConsentChange,
 }) => {
-  const [consented, setConsented] = useState(true);
+  const [consented, setConsented] = useState(false);
 
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.checked;
@@ -34,12 +34,12 @@ export const HumanApprovalStep: React.FC<HumanApprovalStepProps> = ({
         </div>
 
         <div className="p-3 bg-neutral-50 rounded-md border border-neutral-200 text-xs leading-relaxed space-y-2">
-          <p className="font-semibold text-neutral-900">OFFICIAL PUBLIC REPORT DIRECTIVE</p>
+          <p className="font-semibold text-neutral-900">REPORT FOR YOUR REVIEW</p>
           <p>
             Target Category: <strong className="uppercase">{issueType.replace('_', ' ')}</strong> | Location: <strong>{locality}</strong>
           </p>
           <p>
-            "A public hazard has been detected and verified with cryptographic evidence. Prompt inspection and maintenance dispatch are requested under the Municipal Accountability Framework."
+            "This report contains your evidence and description of a possible public issue. Review the details before sending it to the relevant authority."
           </p>
           {userNote && <p className="italic text-neutral-700">Citizen note: "{userNote}"</p>}
         </div>

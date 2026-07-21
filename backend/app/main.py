@@ -45,8 +45,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Accept", "Authorization", "Content-Type", "Idempotency-Key", "X-Request-ID"],
 )
 app.add_middleware(LoggingMiddleware)
 
@@ -111,8 +111,10 @@ async def serve_spa(catchall: str):
         return {"message": "CivicPulse API Backend is running. Frontend is hosted externally."}
 
     # Try serving exact file (e.g. favicon.ico, logo.png) from dist root
-    file_path = os.path.join(dist_dir, catchall)
-    if os.path.exists(file_path) and os.path.isfile(file_path):
+    file_path = os.path.abspath(os.path.join(dist_dir, catchall))
+    dist_root = os.path.abspath(dist_dir)
+    is_within_dist = os.path.commonpath([file_path, dist_root]) == dist_root
+    if is_within_dist and os.path.exists(file_path) and os.path.isfile(file_path):
         return FileResponse(file_path)
     
     # Fallback to SPA index.html
@@ -203,4 +205,3 @@ async def generic_exception_handler(request: Request, exc: Exception):
             }
         })
     return JSONResponse(status_code=500, content=content)
-

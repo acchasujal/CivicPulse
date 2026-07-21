@@ -26,8 +26,14 @@ const DEFAULT_FLAGS: Record<string, boolean> = {
   enableWhatsAppDispatch: true,
   enableAIInferenceBanner: true,
   enableMapMarkerClustering: true,
-  enableOfflineQueueSync: true,
+  enableOfflineQueueSync: false,
   enableGovernmentSLAAlerts: true,
+  enableInternalEvaluation: false,
+};
+
+const featureFlags = {
+  ...DEFAULT_FLAGS,
+  enableInternalEvaluation: import.meta.env.VITE_ENABLE_EVALUATION === 'true',
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -71,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role: user?.role || 'citizen',
         login,
         logout,
-        featureFlags: DEFAULT_FLAGS,
+        featureFlags,
       }}
     >
       {children}

@@ -1,5 +1,17 @@
 import axios from 'axios';
 
+export class ApiError extends Error {
+  status: number;
+  code: string;
+
+  constructor(message: string, status: number, code: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api');
 
 export const apiClient = axios.create({
@@ -12,7 +24,7 @@ export const apiClient = axios.create({
 
 // Request Interceptor: Auth Token Injection
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('civicpulse_auth_token');
+  const token = localStorage.getItem('civicpulse_token');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,11 +35,11 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const normalizedError = {
-      message: error.response?.data?.detail || error.message || 'An unexpected API communication error occurred.',
-      status: error.response?.status || 500,
-      code: error.code || 'ERR_NETWORK',
-    };
+    const normalizedError = new ApiError(
+      error.response?.data?.detail || error.message || 'An unexpected API communication error occurred.',
+      error.response?.status || 0,
+      error.code || 'ERR_NETWORK',
+    );
     return Promise.reject(normalizedError);
   }
 );

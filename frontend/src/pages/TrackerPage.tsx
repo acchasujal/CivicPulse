@@ -24,6 +24,7 @@ export const TrackerPage: React.FC = () => {
   const selectedType = searchParams.get('type') || 'all';
   const selectedRisk = searchParams.get('risk') || 'all';
   const selectedIssueId = searchParams.get('selected') || null;
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
 
   const setSelectedType = (type: string) => {
     const params = new URLSearchParams(searchParams);
@@ -117,21 +118,7 @@ export const TrackerPage: React.FC = () => {
     };
   }, [data]);
 
-  if (error) {
-    return (
-      <div className="flex-1 flex flex-col pb-12 py-8">
-        <ErrorState
-          title="Failed to Load Tracker"
-          explanation={error instanceof Error ? error.message : 'Could not query the reports list from the server.'}
-          onRetry={refetch}
-          retryText="Retry Loading"
-        />
-      </div>
-    );
-  }
-
   const { issues, stats, silenceStats, clusterCounts } = processedData;
-  const [selectedWard, setSelectedWard] = useState<string | null>(null);
 
   // Compute Ward Pattern Intelligence dynamically from live data
   const wardStats = useMemo(() => {
@@ -299,6 +286,19 @@ export const TrackerPage: React.FC = () => {
     setSearchParams(params);
     setSelectedWard(null);
   };
+
+  if (error) {
+    return (
+      <div className="flex-1 flex flex-col pb-12 py-8">
+        <ErrorState
+          title="Failed to Load Tracker"
+          explanation={error instanceof Error ? error.message : 'Could not query the reports list from the server.'}
+          onRetry={refetch}
+          retryText="Retry Loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col pb-12 font-sans">

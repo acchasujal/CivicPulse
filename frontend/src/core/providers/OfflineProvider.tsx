@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useConnectivity } from './ConnectivityProvider';
 
 export interface OfflineDraft {
   id: string;
   title: string;
   category: string;
   createdAt: string;
-  payload: any;
+  payload: unknown;
 }
 
 export interface OfflineContextType {
@@ -16,12 +15,12 @@ export interface OfflineContextType {
   removeDraft: (id: string) => void;
   syncPendingQueue: () => Promise<void>;
   isSyncing: boolean;
+  syncError: string | null;
 }
 
 const OfflineContext = createContext<OfflineContextType | undefined>(undefined);
 
 export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isOnline } = useConnectivity();
   const [pendingDrafts, setPendingDrafts] = useState<OfflineDraft[]>(() => {
     const saved = localStorage.getItem('civicpulse_offline_queue');
     if (saved) {
@@ -34,17 +33,11 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return [];
   });
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem('civicpulse_offline_queue', JSON.stringify(pendingDrafts));
   }, [pendingDrafts]);
-
-  // Auto-sync when coming back online
-  useEffect(() => {
-    if (isOnline && pendingDrafts.length > 0 && !isSyncing) {
-      syncPendingQueue();
-    }
-  }, [isOnline]);
 
   const saveDraft = (draft: Omit<OfflineDraft, 'id' | 'createdAt'>) => {
     const newDraft: OfflineDraft = {
@@ -62,12 +55,12 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const syncPendingQueue = async () => {
     if (pendingDrafts.length === 0) return;
     setIsSyncing(true);
+    setSyncError(null);
     try {
-      // Simulate dispatching local queued drafts to FastAPI backend
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setPendingDrafts([]);
+      throw new Error('Offline submission is not supported by the current API. Review and submit this report while online.');
     } catch (err) {
-      console.error('Offline sync failed:', err);
+      const message = err instanceof Error ? err.message : 'Offline submission is unavailable.';
+      setSyncError(message);
     } finally {
       setIsSyncing(false);
     }
@@ -82,6 +75,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
         removeDraft,
         syncPendingQueue,
         isSyncing,
+        syncError,
       }}
     >
       {children}

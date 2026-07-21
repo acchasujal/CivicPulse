@@ -6,13 +6,15 @@ export interface ReportingState {
   photoFile: File | null;
   photoPreviewUrl: string | null;
   altText: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   locality: string;
   issueType: IssueType;
   userNote: string;
   createdIssueResponse: IssueDetailResponse | null;
   createdIssueId: string | null;
+  communityChoice: 'join' | 'new';
+  consented: boolean;
 }
 
 const INITIAL_STATE: ReportingState = {
@@ -20,13 +22,15 @@ const INITIAL_STATE: ReportingState = {
   photoFile: null,
   photoPreviewUrl: null,
   altText: '',
-  latitude: 28.6139,
-  longitude: 77.2090,
-  locality: 'Connaught Place, New Delhi',
+  latitude: null,
+  longitude: null,
+  locality: '',
   issueType: 'road_damage',
   userNote: '',
   createdIssueResponse: null,
   createdIssueId: null,
+  communityChoice: 'new',
+  consented: false,
 };
 
 export function useReportingFlowState() {

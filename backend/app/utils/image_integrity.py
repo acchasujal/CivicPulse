@@ -18,13 +18,8 @@ def calculate_dhash(image_path: str, hash_size: int = 8) -> str:
         return IMAGE_HASH_CACHE[image_path]
 
     if not os.path.exists(image_path):
-        # Gracefully handle missing files (e.g. seeded demo files not on disk)
-        # Generate a deterministic hash based on the filename to maintain integrity test stability
-        filename = os.path.basename(image_path)
-        mock_val = hash(filename) & 0xffffffffffffffff
-        mock_hash = f"{mock_val:016x}"
-        IMAGE_HASH_CACHE[image_path] = mock_hash
-        return mock_hash
+        logger.warning("Cannot calculate image hash; file does not exist: %s", image_path)
+        return ""
 
     try:
         with Image.open(image_path) as img:
@@ -91,9 +86,8 @@ def check_evidence_integrity(new_hash: str, session: Session, current_issue_id: 
                 target_path = p
                 break
                 
-        # If we can't find the file on disk, we fallback to the clean_url path to calculate mock hash
         if not target_path:
-            target_path = clean_url
+            continue
 
         other_hash = calculate_dhash(target_path)
         if not other_hash:

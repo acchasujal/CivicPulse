@@ -36,7 +36,7 @@ Add a new project in Vercel pointing to the repository.
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
 - **Env Variables**:
-  - `VITE_API_URL`: The HTTPS URL of your Render backend API service (e.g., `https://civicpulse-api.onrender.com`).
+  - `VITE_API_BASE_URL`: The HTTPS URL of your Render backend API service including `/api` (e.g., `https://civicpulse-api.onrender.com/api`).
 
 ### 2. Client-side Routing
 Vercel handles client routing via `frontend/vercel.json` (already configured to route all fallbacks to `index.html`).

@@ -5,7 +5,7 @@ import { Button } from '../../primitives/buttons/Button';
 import { cn } from '../../../lib/utils';
 
 export interface CommunityMatchProps {
-  matchCount: number;
+  matchCount?: number;
   locality: string;
   explanation: string;
   onJoinGroup?: () => void;
@@ -29,7 +29,7 @@ export const CommunityMatch: React.FC<CommunityMatchProps> = ({
         <div className="flex items-center gap-2 text-community">
           <Users className="w-5 h-5" />
           <h4 className="text-base font-semibold text-neutral-900">
-            {matchCount} Similar Reports Grouped Nearby
+            {matchCount === undefined ? 'Nearby reports will be checked on submission' : `${matchCount} Similar Reports Grouped Nearby`}
           </h4>
         </div>
 
