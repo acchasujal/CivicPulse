@@ -13,6 +13,7 @@ import { MaintenancePage } from '../../pages/system/MaintenancePage';
 
 const HomePage = lazy(() => import('../../pages/public/HomePage'));
 const DiscoveryPage = lazy(() => import('../../pages/public/DiscoveryPage'));
+const CommunityPage = lazy(() => import('../../pages/public/CommunityPage'));
 const IntakePage = lazy(() => import('../../pages/public/IntakePage'));
 const TrackerPage = lazy(() => import('../../pages/public/TrackerPage'));
 const IssueDetailPage = lazy(() => import('../../pages/public/IssueDetailPage'));
@@ -41,6 +42,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<SuspenseFallback label="Loading discovery feed..." />}>
             <DiscoveryPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'community',
+        element: (
+          <Suspense fallback={<SuspenseFallback label="Loading community hub..." />}>
+            <CommunityPage />
           </Suspense>
         ),
       },
