@@ -14,6 +14,7 @@ import { MaintenancePage } from '../../pages/system/MaintenancePage';
 const HomePage = lazy(() => import('../../pages/public/HomePage'));
 const DiscoveryPage = lazy(() => import('../../pages/public/DiscoveryPage'));
 const CommunityPage = lazy(() => import('../../pages/public/CommunityPage'));
+const EvaluationPage = lazy(() => import('../../pages/public/EvaluationPage'));
 const IntakePage = lazy(() => import('../../pages/public/IntakePage'));
 const TrackerPage = lazy(() => import('../../pages/public/TrackerPage'));
 const IssueDetailPage = lazy(() => import('../../pages/public/IssueDetailPage'));
@@ -21,6 +22,7 @@ const MyReportsPage = lazy(() => import('../../pages/user/MyReportsPage'));
 const NotificationsPage = lazy(() => import('../../pages/user/NotificationsPage'));
 const GovernmentQueuePage = lazy(() => import('../../pages/institutional/GovernmentQueuePage'));
 const DocumentReviewPage = lazy(() => import('../../pages/institutional/DocumentReviewPage'));
+const AdminPage = lazy(() => import('../../pages/institutional/AdminPage'));
 const SettingsPage = lazy(() => import('../../pages/user/SettingsPage'));
 
 const router = createBrowserRouter([
@@ -50,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<SuspenseFallback label="Loading community hub..." />}>
             <CommunityPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'evaluate',
+        element: (
+          <Suspense fallback={<SuspenseFallback label="Loading evaluation mode..." />}>
+            <EvaluationPage />
           </Suspense>
         ),
       },
@@ -134,6 +144,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<SuspenseFallback label="Loading document review..." />}>
             <DocumentReviewPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'admin',
+        element: (
+          <Suspense fallback={<SuspenseFallback label="Loading admin console..." />}>
+            <AdminPage />
           </Suspense>
         ),
       },
