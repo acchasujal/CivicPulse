@@ -16,6 +16,8 @@ const DiscoveryPage = lazy(() => import('../../pages/public/DiscoveryPage'));
 const IntakePage = lazy(() => import('../../pages/public/IntakePage'));
 const TrackerPage = lazy(() => import('../../pages/public/TrackerPage'));
 const IssueDetailPage = lazy(() => import('../../pages/public/IssueDetailPage'));
+const MyReportsPage = lazy(() => import('../../pages/user/MyReportsPage'));
+const NotificationsPage = lazy(() => import('../../pages/user/NotificationsPage'));
 const GovernmentQueuePage = lazy(() => import('../../pages/institutional/GovernmentQueuePage'));
 const DocumentReviewPage = lazy(() => import('../../pages/institutional/DocumentReviewPage'));
 const SettingsPage = lazy(() => import('../../pages/user/SettingsPage'));
@@ -55,6 +57,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<SuspenseFallback label="Loading my reports..." />}>
             <TrackerPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'my-reports',
+        element: (
+          <Suspense fallback={<SuspenseFallback label="Loading reports dashboard..." />}>
+            <MyReportsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'notifications',
+        element: (
+          <Suspense fallback={<SuspenseFallback label="Loading notifications..." />}>
+            <NotificationsPage />
           </Suspense>
         ),
       },
