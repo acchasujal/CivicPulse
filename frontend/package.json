@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "lint": "oxlint",
+    "test": "node --test scripts/frontend-smoke.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

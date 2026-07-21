@@ -29,7 +29,7 @@ jobs:
           cd backend
           python -m pytest
 
-  frontend-build:
+  frontend-quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -45,7 +45,27 @@ jobs:
           cd frontend
           npm ci
 
+      - name: Lint Frontend
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Typecheck Frontend
+        run: |
+          cd frontend
+          npm run typecheck
+
+      - name: Frontend Smoke Tests
+        run: |
+          cd frontend
+          npm test
+
       - name: Build Frontend
         run: |
           cd frontend
           npm run build
+
+      - name: Dependency Audit
+        run: |
+          cd frontend
+          npm audit --audit-level=high
