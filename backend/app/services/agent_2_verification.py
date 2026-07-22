@@ -10,7 +10,7 @@ from app.models.cluster import Cluster
 from app.services.geo_service import haversine_distance
 from app.services.gemini_client import GeminiClient
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 class Agent2Output(BaseModel):
     is_duplicate_of_cluster: Optional[str] = Field(

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: civicpulse-backend
+    name: nivaran-backend
     env: python
     region: singapore
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
@@ -10,29 +10,30 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: civicpulse-db
+          name: nivaran-db
           property: connectionString
       - key: REDIS_URL
         fromService:
           type: redis
-          name: civicpulse-redis
+          name: nivaran-redis
           property: connectionString
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: FRONTEND_ORIGIN
-        value: https://civicpulse.vercel.app
+        value: https://nivaran.vercel.app
       - key: GEMINI_API_KEY
         sync: false
       - key: SENDGRID_API_KEY
         sync: false
 
 databases:
-  - name: civicpulse-db
-    databaseName: civicpulse
-    user: civicpulse_user
+  - name: nivaran-db
+    databaseName: nivaran
+    user: nivaran_user
     plan: free
 
   - type: redis
-    name: civicpulse-redis
+    name: nivaran-redis
     plan: free
     ipAllowList: []
+

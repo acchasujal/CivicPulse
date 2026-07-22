@@ -10,7 +10,7 @@ from sqlmodel import Session, select
 from datetime import datetime, timezone
 import logging
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 router = APIRouter(tags=["actions"])
 

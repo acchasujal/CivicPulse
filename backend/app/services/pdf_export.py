@@ -4,7 +4,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 def render_draft_to_pdf(content: str, output_path: str) -> None:
     """
@@ -45,7 +45,7 @@ def render_draft_to_pdf(content: str, output_path: str) -> None:
         )
         
         story = []
-        story.append(Paragraph("CivicPulse Escalation Package", title_style))
+        story.append(Paragraph("nivaran Escalation Package", title_style))
         story.append(Spacer(1, 10))
         
         # Split text by newlines and add as paragraphs

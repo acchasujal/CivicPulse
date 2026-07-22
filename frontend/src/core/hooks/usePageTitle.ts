@@ -3,7 +3,8 @@ import { useEffect } from 'react';
 export function usePageTitle(title: string) {
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = title.includes('CivicPulse') ? title : `${title} | CivicPulse`;
+    document.title = title.includes('Nivaran') ? title : `${title} | Nivaran`;
+
 
     return () => {
       document.title = previousTitle;

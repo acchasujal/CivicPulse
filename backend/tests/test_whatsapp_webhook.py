@@ -103,18 +103,18 @@ def test_whatsapp_disabled_returns_503(monkeypatch):
 
 def test_greeting_resets_session_and_sends_welcome(client):
     twiml = post_webhook(client, body="Hi")
-    assert "CivicPulse" in twiml
+    assert "nivaran" in twiml
     assert "photo" in twiml.lower()
 
 
 def test_hello_also_triggers_welcome(client):
     twiml = post_webhook(client, body="hello")
-    assert "CivicPulse" in twiml
+    assert "nivaran" in twiml
 
 
 def test_unexpected_text_before_greeting_sends_welcome(client):
     twiml = post_webhook(client, body="what is this")
-    assert "CivicPulse" in twiml
+    assert "nivaran" in twiml
 
 
 @patch("app.routers.whatsapp._download_media", new_callable=AsyncMock)
@@ -262,7 +262,7 @@ def test_different_phone_numbers_have_isolated_sessions(mock_download, client):
 
     # User B starts fresh
     twiml_b = post_webhook(client, from_number="whatsapp:+922222222222", body="Hi")
-    assert "CivicPulse" in twiml_b
+    assert "nivaran" in twiml_b
 
     from app.routers.whatsapp import _sessions, STEP_AWAITING_LOCATION, STEP_AWAITING_PHOTO
     assert _sessions["whatsapp:+911111111111"].step == STEP_AWAITING_LOCATION

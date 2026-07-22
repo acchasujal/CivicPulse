@@ -16,7 +16,7 @@ SECTION 2: ACTION DRAFTS
   5. Formal body detailing the infrastructure hazard (severity, GPS coordinates, and request for repair)
   6. Attachments section (e.g. 'Evidence Photo Logs')
   7. Public Evidence Ledger section
-  8. Signature block (e.g. 'Sincerely, Concerned Citizens of CivicPulse')
+  8. Signature block (e.g. 'Sincerely, Concerned Citizens of nivaran')
 - drafts.rti_draft: A Right to Information (RTI) application draft under Section 6(1) of the RTI Act 2005. It MUST begin with: 'AI-generated draft. Review before submission.' as the first line. It MUST include:
   1. Addressed to: The Public Information Officer (PIO), [Municipal Authority]
   2. Subject: Application under Section 6(1) of the RTI Act, 2005

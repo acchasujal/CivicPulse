@@ -24,7 +24,7 @@ def session_fixture():
         # Seed test user
         test_user = User(
             id="USR-TEST01",
-            email="testuser@civicpulse.org",
+            email="testuser@nivaran.org",
             hashed_password=hash_password("Secret123!"),
             name="Test User",
             role=ROLE_CITIZEN,
@@ -50,7 +50,7 @@ def test_jwt_token_generation_and_decoding():
         user_id="USR-001",
         role=ROLE_CITIZEN,
         permissions=["issues:read"],
-        email="citizen@civicpulse.org"
+        email="citizen@nivaran.org"
     )
     payload = decode_jwt_token(token)
     assert payload is not None
@@ -61,26 +61,26 @@ def test_jwt_token_generation_and_decoding():
 
 def test_login_success(client: TestClient):
     res = client.post("/api/auth/login", json={
-        "email": "testuser@civicpulse.org",
+        "email": "testuser@nivaran.org",
         "password": "Secret123!"
     })
     assert res.status_code == 200
     data = res.json()
     assert "access_token" in data
     assert "refresh_token" in data
-    assert data["user"]["email"] == "testuser@civicpulse.org"
+    assert data["user"]["email"] == "testuser@nivaran.org"
     assert data["user"]["role"] == ROLE_CITIZEN
 
 def test_login_invalid_password(client: TestClient):
     res = client.post("/api/auth/login", json={
-        "email": "testuser@civicpulse.org",
+        "email": "testuser@nivaran.org",
         "password": "WrongPassword!"
     })
     assert res.status_code == 401
 
 def test_token_refresh_rotation(client: TestClient):
     login_res = client.post("/api/auth/login", json={
-        "email": "testuser@civicpulse.org",
+        "email": "testuser@nivaran.org",
         "password": "Secret123!"
     })
     initial_rt = login_res.json()["refresh_token"]
@@ -97,7 +97,7 @@ def test_token_refresh_rotation(client: TestClient):
 
 def test_logout_and_revocation(client: TestClient):
     login_res = client.post("/api/auth/login", json={
-        "email": "testuser@civicpulse.org",
+        "email": "testuser@nivaran.org",
         "password": "Secret123!"
     })
     at = login_res.json()["access_token"]
@@ -123,7 +123,7 @@ def test_anonymous_session(client: TestClient):
 
 def test_me_and_sessions_endpoints(client: TestClient):
     login_res = client.post("/api/auth/login", json={
-        "email": "testuser@civicpulse.org",
+        "email": "testuser@nivaran.org",
         "password": "Secret123!"
     })
     at = login_res.json()["access_token"]

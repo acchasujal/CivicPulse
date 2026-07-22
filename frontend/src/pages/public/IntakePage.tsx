@@ -28,7 +28,7 @@ const STEPS = [
 ];
 
 export const IntakePage: React.FC = () => {
-  usePageTitle('Report Civic Hazard — CivicPulse');
+  usePageTitle('Report Civic Hazard — nivaran');
   const navigate = useNavigate();
   const { isOnline } = useConnectivity();
   const { saveDraft } = useOffline();

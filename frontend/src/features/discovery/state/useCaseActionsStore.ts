@@ -2,21 +2,21 @@ import { useState, useEffect } from 'react';
 
 export function useCaseActionsStore() {
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
-    const saved = localStorage.getItem('civicpulse_bookmarks');
+    const saved = localStorage.getItem('nivaran_bookmarks');
     return saved ? JSON.parse(saved) : [];
   });
 
   const [followedCases, setFollowedCases] = useState<string[]>(() => {
-    const saved = localStorage.getItem('civicpulse_followed');
+    const saved = localStorage.getItem('nivaran_followed');
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_bookmarks', JSON.stringify(bookmarks));
+    localStorage.setItem('nivaran_bookmarks', JSON.stringify(bookmarks));
   }, [bookmarks]);
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_followed', JSON.stringify(followedCases));
+    localStorage.setItem('nivaran_followed', JSON.stringify(followedCases));
   }, [followedCases]);
 
   const toggleBookmark = (id: string) => {

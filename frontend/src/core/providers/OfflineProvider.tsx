@@ -22,7 +22,7 @@ const OfflineContext = createContext<OfflineContextType | undefined>(undefined);
 
 export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [pendingDrafts, setPendingDrafts] = useState<OfflineDraft[]>(() => {
-    const saved = localStorage.getItem('civicpulse_offline_queue');
+    const saved = localStorage.getItem('nivaran_offline_queue');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -36,7 +36,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_offline_queue', JSON.stringify(pendingDrafts));
+    localStorage.setItem('nivaran_offline_queue', JSON.stringify(pendingDrafts));
   }, [pendingDrafts]);
 
   const saveDraft = (draft: Omit<OfflineDraft, 'id' | 'createdAt'>) => {

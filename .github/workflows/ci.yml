@@ -1,4 +1,5 @@
-name: CivicPulse CI
+name: Nivaran CI
+
 
 on:
   push:

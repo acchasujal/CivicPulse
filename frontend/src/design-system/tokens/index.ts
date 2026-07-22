@@ -1,5 +1,5 @@
 /**
- * CivicPulse Design System — Tokens Export
+ * nivaran Design System — Tokens Export
  * Immutable canonical design token definitions
  */
 

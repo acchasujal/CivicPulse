@@ -85,7 +85,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Feature Explorer Checklist state (persisted in localStorage)
   const [completedFeatures, setCompletedFeatures] = useState<Record<string, boolean>>(() => {
     try {
-      const saved = localStorage.getItem('civicpulse-completed-features-v2');
+      const saved = localStorage.getItem('nivaran-completed-features-v2');
       if (saved) return JSON.parse(saved);
     } catch {}
     return {};
@@ -117,7 +117,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Sync completedFeatures to localStorage
   useEffect(() => {
-    localStorage.setItem('civicpulse-completed-features-v2', JSON.stringify(completedFeatures));
+    localStorage.setItem('nivaran-completed-features-v2', JSON.stringify(completedFeatures));
   }, [completedFeatures]);
 
   // ── Dev logger ────────────────────────────────────────────────────────────
@@ -287,11 +287,11 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // ── isActive / showWelcome ─────────────────────────────────────────────────
   const isActive = status === 'active';
-  const showWelcome = status === 'idle' && !localStorage.getItem('civicpulse-tour-dismissed');
+  const showWelcome = status === 'idle' && !localStorage.getItem('nivaran-tour-dismissed');
 
   // ── Controls ───────────────────────────────────────────────────────────────
   const startTour = useCallback(() => {
-    localStorage.removeItem('civicpulse-tour-dismissed');
+    localStorage.removeItem('nivaran-tour-dismissed');
     eventsRef.current = [];
     setCurrentStepIndex(0);
     setStatus('active');
@@ -322,14 +322,14 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [addEvent]);
 
   const dontShowAgain = useCallback(() => {
-    localStorage.setItem('civicpulse-tour-dismissed', 'true');
+    localStorage.setItem('nivaran-tour-dismissed', 'true');
     setStatus('idle');
     setHighlightRect(null);
     addEvent('DONT_SHOW_AGAIN');
   }, [addEvent]);
 
   const restartTour = useCallback(() => {
-    localStorage.removeItem('civicpulse-tour-dismissed');
+    localStorage.removeItem('nivaran-tour-dismissed');
     eventsRef.current = [];
     setCurrentStepIndex(0);
     setStatus('active');

@@ -21,7 +21,7 @@ export const AIEvent: React.FC<AIEventProps> = ({
     <TimelineEvent
       title={`Automated Assistance: ${claim}`}
       timestamp={timestamp}
-      actorName="CivicPulse Inference Engine"
+      actorName="nivaran Inference Engine"
       actorRole="Automated Classifier"
       icon={<Sparkles className="w-4 h-4 text-white" />}
       iconBgColor="bg-ai"

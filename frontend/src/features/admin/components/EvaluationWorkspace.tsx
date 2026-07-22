@@ -32,7 +32,7 @@ const EVAL_SCENARIOS = [
     description: 'Demonstrates contractor after-photo upload and citizen factual audit voting with cryptographic consensus verification.',
     steps: [
       'Contractor completes repair and uploads geotagged after-photo',
-      'CivicPulse dispatches verification request to nearby ward citizens',
+      'nivaran dispatches verification request to nearby ward citizens',
       '14 local citizens submit physical verification votes (93% consensus)',
       'Audit log records immutable cryptographic hash on public ledger',
     ],

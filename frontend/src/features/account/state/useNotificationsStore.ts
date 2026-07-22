@@ -43,12 +43,12 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 
 export function useNotificationsStore() {
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_notifications');
+    const saved = localStorage.getItem('nivaran_notifications');
     return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
   });
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_notifications', JSON.stringify(notifications));
+    localStorage.setItem('nivaran_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
   const markAsRead = (id: string) => {

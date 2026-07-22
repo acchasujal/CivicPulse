@@ -14,7 +14,7 @@ from app.services.email_client import send_email
 from app.services.pdf_export import render_draft_to_pdf
 from app.config import settings
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 async def escalate_draft(
     draft_id: str,
@@ -102,7 +102,7 @@ async def _escalate_draft_impl(
             # Attempt to send email
             response_text = await send_email(
                 to_email=recipient,
-                subject=f"CivicPulse Escalation - {draft.draft_type.replace('_', ' ').title()}",
+                subject=f"nivaran Escalation - {draft.draft_type.replace('_', ' ').title()}",
                 content=draft.content
             )
             escalation.status = "sent"

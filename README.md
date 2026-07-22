@@ -1,6 +1,6 @@
-# CivicPulse
+# Nivaran
 
-> **Evidence-Driven Civic Accountability Platform**
+> **AI-Powered Civic Issue Reporting & Governance Platform**
 
 ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-blue)
 ![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4)
@@ -10,7 +10,7 @@
 
 Turning verified citizen evidence into explainable AI decisions, government-ready complaints, and transparent public accountability.
 
-![Hero](docs/assets/civicpulse-hero.png)
+![Hero](docs/assets/nivaran-hero.png)
 
 ## Highlights
 
@@ -22,9 +22,10 @@ Turning verified citizen evidence into explainable AI decisions, government-read
 - 🏛 Government Escalation
 - ☁️ Google Cloud Run Deployment
 
-CivicPulse is an AI-powered civic accountability platform that transforms verified citizen-submitted infrastructure evidence into structured community intelligence, actionable government-ready documents, and transparent escalation workflows.
+Nivaran is an AI-powered civic issue reporting and governance platform that enables citizens to report infrastructure problems while improving government accountability through intelligent workflows.
 
-Instead of generating another ticket number, CivicPulse helps citizens build evidence that is difficult to ignore.
+
+Instead of generating another ticket number, nivaran helps citizens build evidence that is difficult to ignore.
 
 ## At a Glance
 
@@ -38,7 +39,7 @@ Instead of generating another ticket number, CivicPulse helps citizens build evi
 ## Live Links
 
 🌐 **Live Demo**  
-https://civicpulse-89026185279.us-central1.run.app/
+https://nivaran-89026185279.us-central1.run.app/
 
 📄 **Project Description**  
 https://docs.google.com/document/d/1hWUT76pNRuKSaGgoruwX7dj_d7txXO5UQVcaR2jI2OI/edit?usp=sharing
@@ -61,21 +62,21 @@ As a result, important civic issues disappear into administrative queues instead
 
 # The Solution
 
-CivicPulse transforms a single infrastructure photo into a verified, explainable, government-ready civic case.
+nivaran transforms a single infrastructure photo into a verified, explainable, government-ready civic case.
 
 ![Product Workflow](docs/assets/product-workflow.png)
 
-# Why CivicPulse?
+# Why nivaran?
 
 Most civic platforms focus on **report collection**.
 
-CivicPulse focuses on **government accountability**.
+nivaran focuses on **government accountability**.
 
 Instead of asking:
 
 > "How can citizens report problems?"
 
-CivicPulse asks:
+nivaran asks:
 
 > **"How can verified community evidence drive real government action?"**
 
@@ -83,9 +84,9 @@ The platform combines evidence validation, AI reasoning, community intelligence,
 
 ---
 
-## Traditional Reporting vs CivicPulse
+## Traditional Reporting vs nivaran
 
-| Traditional Platforms | CivicPulse |
+| Traditional Platforms | nivaran |
 |----------------------|------------|
 | Complaint Collection | Evidence Validation |
 | Individual Reports | Community Intelligence |
@@ -134,7 +135,7 @@ The platform combines evidence validation, AI reasoning, community intelligence,
 
 ## Architecture Overview
 
-![Technical Architecture](docs/assets/civicpulse-architecture.png)
+![Technical Architecture](docs/assets/nivaran-architecture.png)
 
 5 specialized AI agents transform trusted evidence into explainable community intelligence and government-ready action.
 
@@ -166,7 +167,7 @@ The platform combines evidence validation, AI reasoning, community intelligence,
 
 ## System Guarantees
 
-Unlike traditional AI demos, CivicPulse guarantees:
+Unlike traditional AI demos, nivaran guarantees:
 
 - No automatic government submissions
 - Human approval before every escalation
@@ -175,7 +176,7 @@ Unlike traditional AI demos, CivicPulse guarantees:
 - Immutable audit trail
 - Transparent community intelligence
 
-Every visible insight inside CivicPulse can be traced back to verified citizen evidence.
+Every visible insight inside nivaran can be traced back to verified citizen evidence.
 
 
 # Local Setup
@@ -215,7 +216,7 @@ npm run dev
 
 # Access Anywhere
 
-CivicPulse supports multiple reporting channels that all share the same backend pipeline.
+nivaran supports multiple reporting channels that all share the same backend pipeline.
 
 | Channel | Status | Purpose |
 |---------|--------|--------|

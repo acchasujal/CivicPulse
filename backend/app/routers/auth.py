@@ -76,7 +76,7 @@ def login(
     # Set HTTP-Only Refresh Token Cookie for web browsers
     cookie_max_age = 7 * 24 * 3600 if req.remember_me else None
     response.set_cookie(
-        key="civicpulse_refresh",
+        key="nivaran_refresh",
         value=tokens["refresh_token"],
         httponly=True,
         secure=False, # Set True in SSL production
@@ -132,7 +132,7 @@ def refresh_token(
     if req and req.refresh_token:
         token_str = req.refresh_token
     elif request:
-        token_str = request.cookies.get("civicpulse_refresh")
+        token_str = request.cookies.get("nivaran_refresh")
 
     if not token_str:
         raise HTTPException(
@@ -158,13 +158,13 @@ def logout(
     if req and req.refresh_token:
         token_str = req.refresh_token
     elif request:
-        token_str = request.cookies.get("civicpulse_refresh")
+        token_str = request.cookies.get("nivaran_refresh")
 
     if token_str:
         AuthService.revoke_refresh_token(db, token_str)
 
     if response:
-        response.delete_cookie(key="civicpulse_refresh")
+        response.delete_cookie(key="nivaran_refresh")
 
     return {"status": "success", "message": "Successfully logged out of session"}
 
@@ -177,7 +177,7 @@ def logout_all(
     """Revoke all active refresh tokens and terminate all active sessions for current user."""
     count = AuthService.revoke_all_user_sessions(db, current_user.id)
     if response:
-        response.delete_cookie(key="civicpulse_refresh")
+        response.delete_cookie(key="nivaran_refresh")
 
     return {"status": "success", "terminated_sessions": count, "message": "All sessions terminated"}
 

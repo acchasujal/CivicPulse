@@ -6,7 +6,7 @@ from app.services.agent_3_impact import analyze_cluster_impact
 from sqlmodel import Session
 import logging
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 router = APIRouter(prefix="/clusters/{id}/impact", tags=["impact"])
 

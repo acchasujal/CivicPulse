@@ -364,7 +364,7 @@ def main():
     except AttributeError:
         pass
 
-    parser = argparse.ArgumentParser(description="Seed CivicPulse SQLite database with demo data.")
+    parser = argparse.ArgumentParser(description="Seed nivaran SQLite database with demo data.")
     parser.add_argument("--wipe", action="store_true", help="Delete all rows from all tables before seeding.")
     args = parser.parse_args()
 

@@ -28,7 +28,7 @@ export const ReportsDashboard: React.FC = () => {
     return (
       <ErrorState
         title="Unable to load dashboard"
-        description="Could not connect to CivicPulse backend services."
+        description="Could not connect to nivaran backend services."
         onRetry={() => refetch()}
       />
     );

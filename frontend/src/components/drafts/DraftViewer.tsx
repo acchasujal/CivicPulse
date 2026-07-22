@@ -86,7 +86,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
     const element = document.createElement('a');
     const file = new Blob([text], { type: 'text/plain;charset=utf-8' });
     element.href = URL.createObjectURL(file);
-    element.download = `civicpulse_${type}_draft.txt`;
+    element.download = `nivaran_${type}_draft.txt`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -108,7 +108,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
     } else if (recipientKey === 'water_dept') {
       recipientHeader = "TO:\nAssistant Ward Commissioner (Water Supply Department)\nMunicipal Hydraulic Engineering Division\nMumbai, Maharashtra";
     } else {
-      recipientHeader = "DOCUMENT PREPARATION:\nCivicPulse Verification Council\nCompiled Community Evidence Briefing";
+      recipientHeader = "DOCUMENT PREPARATION:\nnivaran Verification Council\nCompiled Community Evidence Briefing";
     }
 
     setEditedContent((prev) => {
@@ -130,7 +130,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
     const locality = issue ? getLocalityName(issue.latitude, issue.longitude) : 'Mumbai Ward';
     const gpsLock = issue ? `${issue.latitude.toFixed(5)}, ${issue.longitude.toFixed(5)}` : 'N/A';
     
-    const citizenBlock = `\n\n---\nCitizen Verification Details:\nSubmitted By: Verified Resident (CivicPulse Authenticated)\nLocality Address: ${locality}, Mumbai, MH\nGPS Coordinates: ${gpsLock}\n\nSupporting Evidence Attachments:\n- Visual Verification Photo (Timestamped)\n- Perceptual visual integrity hashing clearance\n- CivicPulse Spatial Deduplication Registry record`;
+    const citizenBlock = `\n\n---\nCitizen Verification Details:\nSubmitted By: Verified Resident (nivaran Authenticated)\nLocality Address: ${locality}, Mumbai, MH\nGPS Coordinates: ${gpsLock}\n\nSupporting Evidence Attachments:\n- Visual Verification Photo (Timestamped)\n- Perceptual visual integrity hashing clearance\n- nivaran Spatial Deduplication Registry record`;
 
     setEditedContent((prev) => {
       if (prev.includes("Citizen Verification Details:")) {
@@ -301,7 +301,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
                       <option value="pio">Public Information Officer (RTI Cell)</option>
                       <option value="solid_waste">Senior Ward Executive (Solid Waste Management)</option>
                       <option value="water_dept">Assistant Ward Commissioner (Water Supply)</option>
-                      <option value="community">CivicPulse Verification Council (Community Brief)</option>
+                      <option value="community">nivaran Verification Council (Community Brief)</option>
                     </select>
                   </div>
 
@@ -407,7 +407,7 @@ export const DraftViewerComponent: React.FC<DraftViewerProps> = ({
               <div className="official-document-paper rounded-small p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-850 leading-relaxed overflow-y-auto whitespace-pre-wrap select-text selection:bg-teal-150 selection:text-teal-900 border border-slate-350 min-h-[350px] relative max-h-[500px]">
                 {/* Seal Watermark */}
                 <div className="official-seal-watermark">
-                  CivicPulse Draft
+                  nivaran Draft
                 </div>
 
                 {/* Letterhead Design */}

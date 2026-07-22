@@ -21,7 +21,7 @@ def seed_data(session: Session):
     users_data = [
         {
             "id": "USR-ADMIN001",
-            "email": "admin@civicpulse.org",
+            "email": "admin@nivaran.org",
             "name": "System Admin",
             "role": "admin",
             "department": "IT & Governance",
@@ -37,7 +37,7 @@ def seed_data(session: Session):
         },
         {
             "id": "USR-AUDITOR01",
-            "email": "auditor@civicpulse.org",
+            "email": "auditor@nivaran.org",
             "name": "Priya Sharma",
             "role": "auditor",
             "department": "Public Audit Bureau",
@@ -45,7 +45,7 @@ def seed_data(session: Session):
         },
         {
             "id": "USR-CITIZEN01",
-            "email": "citizen@civicpulse.org",
+            "email": "citizen@nivaran.org",
             "name": "Aarav Patel",
             "role": "citizen",
             "department": None,
@@ -53,7 +53,7 @@ def seed_data(session: Session):
         },
     ]
 
-    default_pw = hash_password("CivicPulse2026!")
+    default_pw = hash_password("nivaran2026!")
 
     for u in users_data:
         existing = session.exec(select(User).where(User.email == u["email"])).first()

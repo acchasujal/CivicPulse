@@ -9,7 +9,7 @@ services:
       - "8000:8000"
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=sqlite:///civicpulse.db
+      - DATABASE_URL=sqlite:///nivaran.db
       - REDIS_URL=redis://redis:6379/0
       - FRONTEND_ORIGIN=http://localhost:5173
     depends_on:

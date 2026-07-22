@@ -88,7 +88,7 @@ async def run_with_retry(async_func, *args, **kwargs):
     raise RuntimeError("Max retries exceeded with all available keys on gemini-2.5-flash.")
 
 async def run_e2e():
-    print("=================== CivicPulse E2E Execution ===================")
+    print("=================== nivaran E2E Execution ===================")
     
     # 1. Load a real photo
     photo_path = "../scripts/demo_assets/pothole1.jpg"

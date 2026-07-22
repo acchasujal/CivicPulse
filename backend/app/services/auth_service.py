@@ -291,7 +291,7 @@ class AuthService:
         anon_id = f"ANON-{uuid.uuid4().hex[:6].upper()}"
         anon_user = User(
             id=anon_id,
-            email=f"{anon_id.lower()}@anonymous.civicpulse.org",
+            email=f"{anon_id.lower()}@anonymous.nivaran.org",
             name="Anonymous Citizen",
             role=ROLE_ANONYMOUS,
             is_active=True,

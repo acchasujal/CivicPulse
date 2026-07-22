@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, create_engine, Session, select
 from sqlalchemy import event
 import logging
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 from app.config import settings
 

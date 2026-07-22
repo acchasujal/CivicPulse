@@ -47,7 +47,7 @@ from app.config import settings
 from app.db import get_session
 from app.services.issue_service import IssueValidationError, create_issue_from_bytes
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 router = APIRouter(prefix="/whatsapp", tags=["whatsapp"])
 
@@ -155,7 +155,7 @@ def _validate_twilio_signature(request: Request, body: bytes) -> bool:
 
 def _msg_welcome() -> str:
     return (
-        "👋 Welcome to CivicPulse!\n\n"
+        "👋 Welcome to nivaran!\n\n"
         "Report a civic infrastructure issue in 3 quick steps:\n"
         "1️⃣  Send a clear photo of the problem\n"
         "2️⃣  Share your live location 📍\n"
@@ -397,7 +397,7 @@ async def whatsapp_webhook(
             _msg_success(
                 issue_id=db_issue.id,
                 credibility_score=db_issue.credibility_score,
-                base_url=settings.APP_BASE_URL or "https://civicpulse.app",
+                base_url=settings.APP_BASE_URL or "https://nivaran.app",
             )
         )
 

@@ -7,7 +7,7 @@ import logging
 from typing import Optional, Any
 from app.config import settings
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 class InMemoryCacheStore:
     def __init__(self):

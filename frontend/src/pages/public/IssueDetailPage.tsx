@@ -13,7 +13,7 @@ import { ArrowLeft } from 'lucide-react';
 export const IssueDetailPage: React.FC = () => {
   const { id = 'CP-2026-001' } = useParams();
   const navigate = useNavigate();
-  usePageTitle(`Case #${id} Detail & Timeline — CivicPulse`);
+  usePageTitle(`Case #${id} Detail & Timeline — nivaran`);
   const { data, isLoading, isError, refetch } = useIssueDetail(id);
 
   if (isLoading) {

@@ -38,7 +38,7 @@ def setup_structured_logging():
     root_logger.setLevel(logging.INFO)
     
     # Configure custom app logger
-    logger = logging.getLogger("civicpulse")
+    logger = logging.getLogger("nivaran")
     logger.setLevel(logging.INFO)
 
 class LoggingMiddleware(BaseHTTPMiddleware):
@@ -47,7 +47,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         token = correlation_id_ctx.set(req_id)
         
         start_time = time.time()
-        logger = logging.getLogger("civicpulse")
+        logger = logging.getLogger("nivaran")
+
         
         logger.info(f"incoming_request | method={request.method} | url={request.url.path}")
         

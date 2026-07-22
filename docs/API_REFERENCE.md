@@ -1,4 +1,4 @@
-# CivicPulse API Reference Guide
+# nivaran API Reference Guide
 
 All backend endpoints use the prefix `/api`.
 

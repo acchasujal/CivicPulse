@@ -11,7 +11,7 @@ from app.models.issue import Issue
 from app.dependencies import get_evidence_validator
 from app.services.evidence_validation import Stage0Result, Stage0Checks
 
-test_sqlite_file = "test_stage0_civicpulse.db"
+test_sqlite_file = "test_stage0_nivaran.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
 def override_get_session():

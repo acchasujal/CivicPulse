@@ -22,7 +22,7 @@ from app.services.issue_service import create_issue_from_bytes, IssueValidationE
 from app.dependencies import get_evidence_validator
 from sqlmodel import Session, select
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 router = APIRouter(prefix="/issues", tags=["issues"])
 

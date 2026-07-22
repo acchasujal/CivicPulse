@@ -4,7 +4,7 @@ from PIL import Image
 from sqlmodel import Session, select
 from app.models.issue import Issue
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 # Global in-memory cache to avoid reading images from disk repeatedly
 IMAGE_HASH_CACHE = {}

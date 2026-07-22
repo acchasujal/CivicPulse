@@ -2,7 +2,7 @@ import httpx
 import logging
 from app.config import settings
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 async def send_email(to_email: str, subject: str, content: str) -> str:
     """

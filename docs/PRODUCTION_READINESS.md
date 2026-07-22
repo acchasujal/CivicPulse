@@ -1,4 +1,4 @@
-# CivicPulse Production Readiness & Audit Report
+# nivaran Production Readiness & Audit Report
 
 ## Summary Verdict: PRODUCTION READY (Release Candidate RC1)
 

@@ -120,7 +120,7 @@ export const CitizenProfileForm: React.FC = () => {
         </div>
 
         <p className="text-xs text-neutral-700 leading-relaxed">
-          CivicPulse enforces citizen data sovereignty. You can export your evidence ledger or sign out at any time.
+          nivaran enforces citizen data sovereignty. You can export your evidence ledger or sign out at any time.
         </p>
 
         <div className="flex flex-wrap items-center gap-3 pt-2">

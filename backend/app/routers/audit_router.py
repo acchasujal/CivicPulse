@@ -34,12 +34,12 @@ def export_audit_log(
         return Response(
             content=content,
             media_type="text/csv",
-            headers={"Content-Disposition": 'attachment; filename="civicpulse_audit_log.csv"'}
+            headers={"Content-Disposition": 'attachment; filename="nivaran_audit_log.csv"'}
         )
     else:
         content = AuditService.export_audit_json(db, issue_id=issue_id)
         return Response(
             content=content,
             media_type="application/json",
-            headers={"Content-Disposition": 'attachment; filename="civicpulse_audit_log.json"'}
+            headers={"Content-Disposition": 'attachment; filename="nivaran_audit_log.json"'}
         )

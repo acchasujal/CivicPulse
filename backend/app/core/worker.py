@@ -6,7 +6,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 class DeadLetterQueue:
     def __init__(self):

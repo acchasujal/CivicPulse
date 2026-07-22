@@ -13,7 +13,7 @@ const AccessibilityContext = createContext<AccessibilityContextType | undefined>
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [textScale, setTextScaleState] = useState<TextScale>(() => {
-    return (localStorage.getItem('civicpulse_text_scale') as TextScale) || 'standard';
+    return (localStorage.getItem('nivaran_text_scale') as TextScale) || 'standard';
   });
   const [announcement, setAnnouncement] = useState<{ message: string; urgency: 'polite' | 'assertive' } | null>(null);
 
@@ -22,7 +22,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     : false;
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_text_scale', textScale);
+    localStorage.setItem('nivaran_text_scale', textScale);
     document.documentElement.setAttribute('data-text-scale', textScale);
   }, [textScale]);
 

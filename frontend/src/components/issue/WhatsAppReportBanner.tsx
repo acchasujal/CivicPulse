@@ -2,11 +2,11 @@
  * WhatsAppReportBanner.tsx
  *
  * Hero mobile reporting section rendered below the PhotoUploader in Step 1.
- * Gives citizens an immediate alternative entry point to CivicPulse
+ * Gives citizens an immediate alternative entry point to nivaran
  * without hiding it in a sidebar or modal.
  *
  * Design intent:
- *   "WhatsApp is simply another entry point into CivicPulse's unified
+ *   "WhatsApp is simply another entry point into nivaran's unified
  *    accountability engine — not a separate product."
  *
  * QR code: Generated via Google Charts API (a Google Technology already

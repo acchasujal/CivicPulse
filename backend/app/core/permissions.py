@@ -1,5 +1,5 @@
 """
-Role and Permission Definitions & Matrix for CivicPulse RBAC/ABAC.
+Role and Permission Definitions & Matrix for nivaran RBAC/ABAC.
 """
 from typing import Dict, List, Set, Optional
 

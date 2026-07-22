@@ -1,4 +1,5 @@
-name: CivicPulse Backend Production CI/CD
+name: Nivaran Backend Production CI/CD
+
 
 on:
   push:
@@ -41,4 +42,5 @@ jobs:
       - name: Build Docker Image
         run: |
           cd backend
-          docker build -t civicpulse-backend:latest .
+          docker build -t nivaran-backend:latest .
+

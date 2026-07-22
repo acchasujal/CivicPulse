@@ -8,7 +8,7 @@ from fastapi import HTTPException, status
 from google import genai
 from google.genai import types
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 T = TypeVar("T", bound=BaseModel)
 

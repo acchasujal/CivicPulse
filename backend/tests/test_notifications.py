@@ -22,7 +22,7 @@ def session_fixture():
     with Session(engine) as session:
         user = User(
             id="USR-NOTIF-TEST",
-            email="notifuser@civicpulse.org",
+            email="notifuser@nivaran.org",
             hashed_password=hash_password("Pass123!"),
             name="Notif User",
             role=ROLE_CITIZEN,
@@ -43,7 +43,7 @@ def client_fixture(session: Session):
     app.dependency_overrides.clear()
 
 def test_notification_creation_and_unread_count(client: TestClient, session: Session):
-    token, _, _ = create_access_token("USR-NOTIF-TEST", ROLE_CITIZEN, ["issues:read"], "notifuser@civicpulse.org")
+    token, _, _ = create_access_token("USR-NOTIF-TEST", ROLE_CITIZEN, ["issues:read"], "notifuser@nivaran.org")
     headers = {"Authorization": f"Bearer {token}"}
 
     # Dispatch events
@@ -74,7 +74,7 @@ def test_notification_creation_and_unread_count(client: TestClient, session: Ses
     assert all_res.json()["updated_count"] == 1
 
 def test_user_notification_preferences(client: TestClient):
-    token, _, _ = create_access_token("USR-NOTIF-TEST", ROLE_CITIZEN, ["issues:read"], "notifuser@civicpulse.org")
+    token, _, _ = create_access_token("USR-NOTIF-TEST", ROLE_CITIZEN, ["issues:read"], "notifuser@nivaran.org")
     headers = {"Authorization": f"Bearer {token}"}
 
     get_pref = client.get("/api/preferences/notifications", headers=headers)
@@ -92,7 +92,7 @@ def test_user_notification_preferences(client: TestClient):
 def test_system_announcements(client: TestClient, session: Session):
     admin_user = User(
         id="USR-ADMIN-NOTIF",
-        email="admin@civicpulse.org",
+        email="admin@nivaran.org",
         name="Admin User",
         role=ROLE_ADMIN,
         is_active=True
@@ -100,7 +100,7 @@ def test_system_announcements(client: TestClient, session: Session):
     session.add(admin_user)
     session.commit()
 
-    admin_token, _, _ = create_access_token("USR-ADMIN-NOTIF", ROLE_ADMIN, ["users:manage"], "admin@civicpulse.org")
+    admin_token, _, _ = create_access_token("USR-ADMIN-NOTIF", ROLE_ADMIN, ["users:manage"], "admin@nivaran.org")
     headers = {"Authorization": f"Bearer {admin_token}"}
 
 

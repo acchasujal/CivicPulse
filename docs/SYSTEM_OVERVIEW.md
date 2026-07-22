@@ -1,6 +1,6 @@
-# CivicPulse — System Architecture & Overview
+# nivaran — System Architecture & Overview
 
-CivicPulse is an AI-powered municipal intake, automated dispatch, offline-resilient reporting, and community verification platform.
+nivaran is an AI-powered municipal intake, automated dispatch, offline-resilient reporting, and community verification platform.
 
 ---
 

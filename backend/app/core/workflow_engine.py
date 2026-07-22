@@ -1,5 +1,5 @@
 """
-Finite State Machine (FSM) & SLA Calculation Engine for CivicPulse Government Workflow.
+Finite State Machine (FSM) & SLA Calculation Engine for nivaran Government Workflow.
 """
 from typing import Dict, List, Set, Optional, Tuple, Any
 from datetime import datetime, timedelta, timezone

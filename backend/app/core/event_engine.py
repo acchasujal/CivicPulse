@@ -9,7 +9,7 @@ from sqlmodel import Session as DBSession, select
 from app.models.notification import Notification, NotificationDelivery, NotificationPreference
 from app.models.user import User
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 def dispatch_notification_event(
     db: DBSession,

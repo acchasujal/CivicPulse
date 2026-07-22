@@ -228,7 +228,7 @@ async def validate_evidence_photo(
 
     prompt = "Perform Stage 0 evidence validation check on this uploaded media."
     system_instruction = (
-        "You are the Stage 0 Evidence Validation Gate for CivicPulse. "
+        "You are the Stage 0 Evidence Validation Gate for nivaran. "
         "Strictly evaluate the image contents and determine if it represents a valid outdoor civic infrastructure issue report.\n"
         "1. Is it a real photograph (and NOT a document, certificate, screenshot, graphic, design, animal, selfie, or random indoor item)?\n"
         "2. Is it outdoor (and NOT indoor)?\n"

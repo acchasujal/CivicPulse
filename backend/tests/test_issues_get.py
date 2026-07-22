@@ -10,7 +10,7 @@ from app.models.cluster import Cluster
 from app.models.impact_summary import ImpactSummary
 from app.models.action_draft import ActionDraft
 
-test_sqlite_file = "test_issues_get_civicpulse.db"
+test_sqlite_file = "test_issues_get_nivaran.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
 def override_get_session():

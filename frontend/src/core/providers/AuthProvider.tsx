@@ -38,7 +38,7 @@ const featureFlags = {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem('civicpulse_user');
+    const saved = localStorage.getItem('nivaran_user');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -54,14 +54,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const login = (token: string, newUser: UserProfile) => {
-    localStorage.setItem('civicpulse_token', token);
-    localStorage.setItem('civicpulse_user', JSON.stringify(newUser));
+    localStorage.setItem('nivaran_token', token);
+    localStorage.setItem('nivaran_user', JSON.stringify(newUser));
     setUser(newUser);
   };
 
   const logout = () => {
-    localStorage.removeItem('civicpulse_token');
-    localStorage.removeItem('civicpulse_user');
+    localStorage.removeItem('nivaran_token');
+    localStorage.removeItem('nivaran_user');
     setUser({
       id: 'ANON-001',
       name: 'Anonymous Citizen',

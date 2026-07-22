@@ -10,7 +10,7 @@ from app.models.issue import Issue
 from app.services.gemini_client import GeminiClient
 from app.services.agent_3_impact import generate_merged_impact_and_drafts
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 class Agent4Output(BaseModel):
     complaint_draft: str = Field(..., description="Evidence-based formal complaint draft")

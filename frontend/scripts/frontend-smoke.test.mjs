@@ -29,5 +29,5 @@ test('offline provider never clears queued work without an API contract', async 
 test('API failures use an Error-compatible normalized type and the shared token key', async () => {
   const client = await source('src/api/client.ts');
   assert.match(client, /class ApiError extends Error/);
-  assert.match(client, /localStorage\.getItem\('civicpulse_token'\)/);
+  assert.match(client, /localStorage\.getItem\('nivaran_token'\)/);
 });

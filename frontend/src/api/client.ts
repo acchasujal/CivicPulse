@@ -24,7 +24,7 @@ export const apiClient = axios.create({
 
 // Request Interceptor: Auth Token Injection
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('civicpulse_token');
+  const token = localStorage.getItem('nivaran_token');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }

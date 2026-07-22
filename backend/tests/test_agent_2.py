@@ -13,7 +13,7 @@ from app.models.cluster import Cluster
 from app.services.geo_service import haversine_distance
 from app.services.agent_2_verification import verify_and_cluster_issue
 
-test_sqlite_file = "test_agent2_civicpulse.db"
+test_sqlite_file = "test_agent2_nivaran.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
 def override_get_session():

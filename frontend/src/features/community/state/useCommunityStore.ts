@@ -71,21 +71,21 @@ const INITIAL_VOLUNTEERS: VolunteerItem[] = [
 
 export function useCommunityStore() {
   const [activities, setActivities] = useState<CommunityActivityItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_community_activities');
+    const saved = localStorage.getItem('nivaran_community_activities');
     return saved ? JSON.parse(saved) : INITIAL_ACTIVITIES;
   });
 
   const [volunteers, setVolunteers] = useState<VolunteerItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_volunteers');
+    const saved = localStorage.getItem('nivaran_volunteers');
     return saved ? JSON.parse(saved) : INITIAL_VOLUNTEERS;
   });
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_community_activities', JSON.stringify(activities));
+    localStorage.setItem('nivaran_community_activities', JSON.stringify(activities));
   }, [activities]);
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_volunteers', JSON.stringify(volunteers));
+    localStorage.setItem('nivaran_volunteers', JSON.stringify(volunteers));
   }, [volunteers]);
 
   const addActivity = (item: Omit<CommunityActivityItem, 'id' | 'timestamp'>) => {

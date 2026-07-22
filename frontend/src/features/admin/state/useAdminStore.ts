@@ -75,22 +75,22 @@ const INITIAL_USERS: UserRoleItem[] = [
   { id: 'USR-1', name: 'Priya Sharma', email: 'priya@noida.gov.in', role: 'citizen', status: 'active' },
   { id: 'USR-2', name: 'R. Verma', email: 'verma@pwddelhi.gov.in', role: 'officer', department: 'Public Works Dept', status: 'active' },
   { id: 'USR-3', name: 'S. Sharma', email: 'sharma@jalboard.gov.in', role: 'officer', department: 'Jal Board', status: 'active' },
-  { id: 'USR-4', name: 'System Admin', email: 'admin@civicpulse.gov.in', role: 'admin', status: 'active' },
+  { id: 'USR-4', name: 'System Admin', email: 'admin@nivaran.gov.in', role: 'admin', status: 'active' },
 ];
 
 export function useAdminStore() {
   const [moderationQueue, setModerationQueue] = useState<ModerationItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_moderation_queue');
+    const saved = localStorage.getItem('nivaran_moderation_queue');
     return saved ? JSON.parse(saved) : INITIAL_MODERATION;
   });
 
   const [auditLogs] = useState<AuditLogItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_audit_logs');
+    const saved = localStorage.getItem('nivaran_audit_logs');
     return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
   });
 
   const [users, setUsers] = useState<UserRoleItem[]>(() => {
-    const saved = localStorage.getItem('civicpulse_user_roles');
+    const saved = localStorage.getItem('nivaran_user_roles');
     return saved ? JSON.parse(saved) : INITIAL_USERS;
   });
 
@@ -102,15 +102,15 @@ export function useAdminStore() {
   });
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_moderation_queue', JSON.stringify(moderationQueue));
+    localStorage.setItem('nivaran_moderation_queue', JSON.stringify(moderationQueue));
   }, [moderationQueue]);
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_audit_logs', JSON.stringify(auditLogs));
+    localStorage.setItem('nivaran_audit_logs', JSON.stringify(auditLogs));
   }, [auditLogs]);
 
   useEffect(() => {
-    localStorage.setItem('civicpulse_user_roles', JSON.stringify(users));
+    localStorage.setItem('nivaran_user_roles', JSON.stringify(users));
   }, [users]);
 
   const updateModerationStatus = (id: string, status: 'approved' | 'rejected' | 'archived') => {

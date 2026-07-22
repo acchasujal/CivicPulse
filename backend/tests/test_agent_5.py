@@ -16,7 +16,7 @@ from app.models.action_draft import ActionDraft
 from app.models.escalation import Escalation
 from app.config import settings
 
-test_sqlite_file = "test_agent5_civicpulse.db"
+test_sqlite_file = "test_agent5_nivaran.db"
 test_engine = create_engine(f"sqlite:///{test_sqlite_file}", connect_args={"check_same_thread": False})
 
 def override_get_session():
@@ -128,7 +128,7 @@ def test_approved_email_success():
         # Verify email client was called
         mock_send.assert_called_once_with(
             to_email="ward@example.gov",
-            subject="CivicPulse Escalation - Complaint",
+            subject="nivaran Escalation - Complaint",
             content="Formal complaint content"
         )
 

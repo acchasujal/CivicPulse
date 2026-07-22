@@ -1,6 +1,6 @@
-# CivicPulse Deployment & Environment Guide
+# nivaran Deployment & Environment Guide
 
-This guide explains how to configure environment variables (`.env`) and deploy CivicPulse locally, using Docker Compose, or on Google Cloud Run.
+This guide explains how to configure environment variables (`.env`) and deploy nivaran locally, using Docker Compose, or on Google Cloud Run.
 
 ---
 
@@ -16,15 +16,15 @@ FRONTEND_ORIGIN=http://localhost:5173
 
 # Database & Cache Configuration
 # Local SQLite (default):
-DATABASE_URL=sqlite:///civicpulse.db
+DATABASE_URL=sqlite:///nivaran.db
 # PostgreSQL (production alternative):
-# DATABASE_URL=postgresql://user:password@localhost:5432/civicpulse_db
+# DATABASE_URL=postgresql://user:password@localhost:5432/nivaran_db
 
 REDIS_URL=redis://localhost:6379/0
 RATE_LIMIT_PER_MINUTE=120
 
 # Auth & JWT Configuration
-JWT_SECRET_KEY=civicpulse_super_secret_jwt_key_2026_change_in_production!
+JWT_SECRET_KEY=nivaran_super_secret_jwt_key_2026_change_in_production!
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 REFRESH_TOKEN_EXPIRE_DAYS=7
@@ -35,7 +35,7 @@ GEMINI_MODEL=gemini-2.5-flash
 
 # Email Gateway (SendGrid)
 SENDGRID_API_KEY=your_sendgrid_api_key_here
-SENDGRID_FROM_EMAIL=noreply@civicpulse.org
+SENDGRID_FROM_EMAIL=noreply@nivaran.org
 
 # WhatsApp Integration (Twilio)
 WHATSAPP_ENABLED=false
@@ -89,9 +89,9 @@ Build and deploy the backend container to Cloud Run:
 
 ```bash
 cd backend
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/civicpulse-backend:latest
-gcloud run deploy civicpulse-backend \
-  --image gcr.io/YOUR_PROJECT_ID/civicpulse-backend:latest \
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/nivaran-backend:latest
+gcloud run deploy nivaran-backend \
+  --image gcr.io/YOUR_PROJECT_ID/nivaran-backend:latest \
   --platform managed \
   --allow-unauthenticated \
   --set-env-vars ENVIRONMENT=production,JWT_SECRET_KEY=your_production_secret,GEMINI_API_KEY=your_gemini_key

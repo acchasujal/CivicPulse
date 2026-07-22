@@ -13,7 +13,7 @@ from app.models.impact_summary import ImpactSummary
 from app.models.action_draft import ActionDraft
 from app.services.gemini_client import GeminiClient
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 class Agent3Output(BaseModel):
     affected_area_description: str = Field(..., description="Evidence-based description of the affected area")
@@ -184,8 +184,8 @@ async def generate_merged_impact_and_drafts(
                 "Respected Sir/Madam,\n"
                 "This is a formal complaint regarding road damage. Potholes are causing severe public risk.\n\n"
                 "Attachments: Evidence Photo Logs\n"
-                "Public Evidence Ledger: Track at CivicPulse\n"
-                "Sincerely,\nConcerned Citizens of CivicPulse"
+                "Public Evidence Ledger: Track at nivaran\n"
+                "Sincerely,\nConcerned Citizens of nivaran"
             )
             rti_draft = (
                 "AI-generated draft. Review before submission.\n"
@@ -290,7 +290,7 @@ async def generate_merged_impact_and_drafts(
         ledger_section = (
             "\n\n---\n"
             "Public Evidence Ledger\n\n"
-            "This complaint is supported by timestamped citizen-submitted evidence processed through CivicPulse's AI verification pipeline."
+            "This complaint is supported by timestamped citizen-submitted evidence processed through nivaran's AI verification pipeline."
         )
         if tracker_url:
             ledger_section += f"\n\nTrack updates:\n{tracker_url}"

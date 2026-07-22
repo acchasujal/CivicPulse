@@ -20,7 +20,7 @@ export const Logo: React.FC<LogoProps> = ({
   variant = 'full',
   size = 'md',
   href = '/',
-  label = 'CivicPulse home',
+  label = 'Nivaran home',
   className,
   ...props
 }) => {
@@ -49,7 +49,7 @@ export const Logo: React.FC<LogoProps> = ({
       className={cn('inline-flex items-center gap-2 select-none', sizeHeights[size], className)}
       {...props}
     >
-      {/* CivicPulse Emblem SVG */}
+      {/* Nivaran Emblem SVG */}
       <svg
         viewBox="0 0 36 36"
         fill="none"
@@ -75,18 +75,19 @@ export const Logo: React.FC<LogoProps> = ({
             className="font-sans font-bold tracking-tight text-[1.1em]"
             style={{ color: textColor }}
           >
-            Civic<span style={{ color: markColor }}>Pulse</span>
+            Niv<span style={{ color: markColor }}>aran</span>
           </span>
           <span
             className="text-[0.55em] font-semibold uppercase tracking-widest mt-0.5"
             style={{ color: badgeColor }}
           >
-            Public Evidence Platform
+            AI Civic Governance Platform
           </span>
         </div>
       )}
     </div>
   );
+
 
   if (href) {
     return (

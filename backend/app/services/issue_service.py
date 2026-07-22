@@ -30,7 +30,7 @@ from app.services.agent_3_impact import analyze_cluster_impact
 from app.services.agent_4_action_generator import generate_action_drafts
 from app.services.evidence_validation import Stage0Result, validate_evidence_photo
 
-logger = logging.getLogger("civicpulse")
+logger = logging.getLogger("nivaran")
 
 UPLOAD_DIR = "static/uploads"
 

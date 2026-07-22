@@ -5,8 +5,9 @@ import { LandingHero } from '../../features/reporting/components/LandingHero';
 import { DiscoverFeed } from '../../features/reporting/components/DiscoverFeed';
 
 export const HomePage: React.FC = () => {
-  usePageTitle('CivicPulse — Public Evidence Platform');
+  usePageTitle('Nivaran — AI-Powered Civic Governance Platform');
   const navigate = useNavigate();
+
 
   return (
     <div className="space-y-6">
