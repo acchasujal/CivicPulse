@@ -7,7 +7,8 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.db import init_db
-from app.routers import issues, clusters, impact, actions, escalations, whatsapp, auth, sync_router, case_router, notification_router
+from app.routers import issues, clusters, impact, actions, escalations, whatsapp, auth, sync_router, case_router, notification_router, analytics_router, audit_router
+
 
 
 
@@ -69,6 +70,20 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(sync_router.router, prefix="/api")
 app.include_router(case_router.router, prefix="/api")
 app.include_router(notification_router.router, prefix="/api")
+app.include_router(analytics_router.router, prefix="/api")
+app.include_router(audit_router.router, prefix="/api")
+
+@app.get("/api/live")
+@app.get("/live")
+def live_check():
+    return {"status": "alive", "timestamp": os.getenv("ENV", "production")}
+
+@app.get("/api/metrics")
+@app.get("/metrics")
+def get_system_metrics():
+    from app.utils.metrics import system_metrics
+    return system_metrics.get_metrics_summary()
+
 
 
 
