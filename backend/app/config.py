@@ -18,7 +18,13 @@ class Settings(BaseSettings):
     AGENT5_PDF_FALLBACK: bool = True
     APP_BASE_URL: str = ""
 
+    # Redis & Caching Configuration
+    REDIS_URL: Optional[str] = "redis://localhost:6379/0"
+    RATE_LIMIT_PER_MINUTE: int = 120
+    ENVIRONMENT: str = "production"
+
     # Auth & JWT Configuration
+
     JWT_SECRET_KEY: str = "civicpulse_super_secret_jwt_key_2026_change_in_production!"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
