@@ -6,7 +6,8 @@ from datetime import datetime, timezone, timedelta
 from sqlmodel import Session as DBSession, select
 from fastapi import HTTPException, status
 
-from app.models.user import User, RefreshToken, Session, LoginHistory
+from app.models.user import User, RefreshToken, DeviceSession, LoginHistory
+
 from app.core.permissions import (
     get_role_permissions,
     ROLE_CITIZEN,
@@ -132,7 +133,7 @@ class AuthService:
         db.add(rf_token)
 
         # Persist / Update Device Session
-        session = Session(
+        session = DeviceSession(
             user_id=user.id,
             token_jti=refresh_jti,
             ip_address=ip_address,
@@ -238,7 +239,7 @@ class AuthService:
         db.add(stored_rf)
 
         # Deactivate associated old session
-        old_session = db.exec(select(Session).where(Session.token_jti == jti)).first()
+        old_session = db.exec(select(DeviceSession).where(DeviceSession.token_jti == jti)).first()
         if old_session:
             old_session.is_active = False
             db.add(old_session)
@@ -255,7 +256,7 @@ class AuthService:
         )
         db.add(new_rf_token)
 
-        new_session = Session(
+        new_session = DeviceSession(
             user_id=user.id,
             token_jti=new_refresh_jti,
             ip_address=ip_address or stored_rf.ip_address,
@@ -353,7 +354,7 @@ class AuthService:
             rf.is_revoked = True
             db.add(rf)
         
-        session = db.exec(select(Session).where(Session.token_jti == jti)).first()
+        session = db.exec(select(DeviceSession).where(DeviceSession.token_jti == jti)).first()
         if session:
             session.is_active = False
             db.add(session)
@@ -369,7 +370,7 @@ class AuthService:
             t.is_revoked = True
             db.add(t)
 
-        sessions = db.exec(select(Session).where(Session.user_id == user_id, Session.is_active == True)).all()
+        sessions = db.exec(select(DeviceSession).where(DeviceSession.user_id == user_id, DeviceSession.is_active == True)).all()
         count = len(sessions)
         for s in sessions:
             s.is_active = False
@@ -377,3 +378,4 @@ class AuthService:
 
         db.commit()
         return count
+

@@ -7,7 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
 from sqlmodel import Session as DBSession, select
 
 from app.db import get_session
-from app.models.user import User, Session
+from app.models.user import User, DeviceSession
+
 from app.services.auth_service import AuthService
 from app.dependencies.auth_deps import get_current_user, get_optional_user, require_admin
 
@@ -221,7 +222,7 @@ def list_active_sessions(
 ):
     """List all active device sessions for current user."""
     sessions = db.exec(
-        select(Session).where(Session.user_id == current_user.id, Session.is_active == True)
+        select(DeviceSession).where(DeviceSession.user_id == current_user.id, DeviceSession.is_active == True)
     ).all()
 
     res = []
@@ -246,7 +247,7 @@ def terminate_session(
     db: DBSession = Depends(get_session)
 ):
     """Terminate a specific active session by ID."""
-    session = db.exec(select(Session).where(Session.id == session_id)).first()
+    session = db.exec(select(DeviceSession).where(DeviceSession.id == session_id)).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
@@ -256,9 +257,7 @@ def terminate_session(
 
     session.is_active = False
     db.add(session)
-
-    # Revoke associated refresh token if present
-    rf = db.exec(select(AuthService).where(AuthService == session.token_jti)).first()
     db.commit()
 
     return {"status": "success", "message": f"Session {session_id} terminated"}
+

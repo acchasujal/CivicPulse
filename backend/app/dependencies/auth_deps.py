@@ -7,7 +7,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session as DBSession, select
 
 from app.db import get_session
-from app.models.user import User, Session
+from app.models.user import User, DeviceSession
+
 from app.utils.security import decode_jwt_token
 from app.core.permissions import has_permission, ROLE_ADMIN, ROLE_OFFICER, ROLE_INSTITUTION, ROLE_EVALUATION
 

@@ -9,7 +9,8 @@ from sqlmodel.pool import StaticPool
 from app.main import app
 from app.db import get_session
 from app.utils.security import create_access_token, create_refresh_token, decode_jwt_token, hash_password
-from app.models.user import User, RefreshToken, Session as UserSession
+from app.models.user import User, RefreshToken, DeviceSession as UserSession
+
 from app.services.auth_service import AuthService
 from app.core.permissions import ROLE_ADMIN, ROLE_OFFICER, ROLE_CITIZEN, ROLE_ANONYMOUS
 

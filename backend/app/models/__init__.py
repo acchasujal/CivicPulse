@@ -3,7 +3,7 @@ from .issue import Issue
 from .impact_summary import ImpactSummary
 from .action_draft import ActionDraft
 from .escalation import Escalation
-from .user import User, Role, Permission, RefreshToken, Session, LoginHistory
+from .user import User, Role, Permission, RefreshToken, DeviceSession, LoginHistory
 from .sync import IdempotencyKey, UploadSession, MediaAsset, OfflineSyncJob, SyncConflict
 from .case import Department, OfficerProfile, CaseAssignment, CaseTransition, RepairVerification, ResolutionRecord
 from .notification import Notification, NotificationPreference, NotificationDelivery, Announcement
@@ -18,7 +18,7 @@ __all__ = [
     "Role",
     "Permission",
     "RefreshToken",
-    "Session",
+    "DeviceSession",
     "LoginHistory",
     "IdempotencyKey",
     "UploadSession",
@@ -36,6 +36,7 @@ __all__ = [
     "NotificationDelivery",
     "Announcement",
 ]
+
 
 
 

@@ -22,7 +22,7 @@ class User(SQLModel, table=True):
     last_login_at: Optional[datetime] = Field(default=None)
 
     refresh_tokens: List["RefreshToken"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    sessions: List["Session"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    sessions: List["DeviceSession"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     login_history: List["LoginHistory"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
 class Role(SQLModel, table=True):
@@ -55,7 +55,7 @@ class RefreshToken(SQLModel, table=True):
 
     user: User = Relationship(back_populates="refresh_tokens")
 
-class Session(SQLModel, table=True):
+class DeviceSession(SQLModel, table=True):
     __tablename__ = "device_sessions"
 
     id: str = Field(default_factory=lambda: f"SES-{uuid.uuid4().hex[:12].upper()}", primary_key=True, index=True)
@@ -69,6 +69,7 @@ class Session(SQLModel, table=True):
     last_activity_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     user: User = Relationship(back_populates="sessions")
+
 
 class LoginHistory(SQLModel, table=True):
     __tablename__ = "login_history"
