@@ -27,10 +27,12 @@ def init_db():
     from app.models import (
         Cluster, Issue, ImpactSummary, ActionDraft, Escalation,
         User, Role, Permission, RefreshToken, Session, LoginHistory,
-        IdempotencyKey, UploadSession, MediaAsset, OfflineSyncJob, SyncConflict
+        IdempotencyKey, UploadSession, MediaAsset, OfflineSyncJob, SyncConflict,
+        Department, OfficerProfile, CaseAssignment, CaseTransition, RepairVerification, ResolutionRecord
     )
     SQLModel.metadata.create_all(engine)
     logger.info("Database tables initialized successfully.")
+
 
 
     

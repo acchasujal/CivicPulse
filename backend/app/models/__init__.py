@@ -5,6 +5,7 @@ from .action_draft import ActionDraft
 from .escalation import Escalation
 from .user import User, Role, Permission, RefreshToken, Session, LoginHistory
 from .sync import IdempotencyKey, UploadSession, MediaAsset, OfflineSyncJob, SyncConflict
+from .case import Department, OfficerProfile, CaseAssignment, CaseTransition, RepairVerification, ResolutionRecord
 
 __all__ = [
     "Cluster",
@@ -23,6 +24,13 @@ __all__ = [
     "MediaAsset",
     "OfflineSyncJob",
     "SyncConflict",
+    "Department",
+    "OfficerProfile",
+    "CaseAssignment",
+    "CaseTransition",
+    "RepairVerification",
+    "ResolutionRecord",
 ]
+
 
 
