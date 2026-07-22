@@ -1,7 +1,77 @@
 from sqlmodel import Session, select
-from app.models import Cluster, Issue, ImpactSummary, ActionDraft, Escalation
+from app.models import Cluster, Issue, ImpactSummary, ActionDraft, Escalation, User, Role, Permission
+from app.utils.security import hash_password
 
 def seed_data(session: Session):
+    # 0. Seed Default Roles and Seed Accounts
+    roles_data = [
+        {"id": "role-citizen", "name": "citizen", "description": "Standard citizen user"},
+        {"id": "role-officer", "name": "officer", "description": "Government municipal ward officer"},
+        {"id": "role-auditor", "name": "auditor", "description": "Independent compliance auditor"},
+        {"id": "role-admin", "name": "admin", "description": "System administrator"},
+        {"id": "role-institution", "name": "institution", "description": "Institutional partner (NGO/Media/Legal)"},
+        {"id": "role-evaluation", "name": "evaluation", "description": "Internal evaluation framework user"},
+        {"id": "role-anonymous", "name": "anonymous", "description": "Unauthenticated guest citizen"},
+    ]
+    for r in roles_data:
+        if not session.get(Role, r["id"]):
+            session.add(Role(id=r["id"], name=r["name"], description=r["description"]))
+    session.commit()
+
+    users_data = [
+        {
+            "id": "USR-ADMIN001",
+            "email": "admin@civicpulse.org",
+            "name": "System Admin",
+            "role": "admin",
+            "department": "IT & Governance",
+            "phone": "+919876543210",
+        },
+        {
+            "id": "USR-OFFICER01",
+            "email": "officer@mcgm.gov.in",
+            "name": "Rajesh Kumar",
+            "role": "officer",
+            "department": "K-East Ward Municipal Office",
+            "phone": "+919820012345",
+        },
+        {
+            "id": "USR-AUDITOR01",
+            "email": "auditor@civicpulse.org",
+            "name": "Priya Sharma",
+            "role": "auditor",
+            "department": "Public Audit Bureau",
+            "phone": "+919830054321",
+        },
+        {
+            "id": "USR-CITIZEN01",
+            "email": "citizen@civicpulse.org",
+            "name": "Aarav Patel",
+            "role": "citizen",
+            "department": None,
+            "phone": "+919810098765",
+        },
+    ]
+
+    default_pw = hash_password("CivicPulse2026!")
+
+    for u in users_data:
+        existing = session.exec(select(User).where(User.email == u["email"])).first()
+        if not existing:
+            user = User(
+                id=u["id"],
+                email=u["email"],
+                hashed_password=default_pw,
+                name=u["name"],
+                role=u["role"],
+                department=u["department"],
+                phone=u["phone"],
+                is_active=True,
+                is_verified=True
+            )
+            session.add(user)
+    session.commit()
+
     # 1. Define Clusters (Only clusters that contain 2 or more reports)
     clusters_data = [
         {
