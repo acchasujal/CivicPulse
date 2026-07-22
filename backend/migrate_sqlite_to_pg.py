@@ -111,8 +111,17 @@ def migrate_data(sqlite_path: str, pg_url: str):
 
             logger.info(f"Migrating {len(records)} records into table '{table_name}'...")
             
-            # Perform bulk insert
-            pg_conn.execute(pg_table.insert(), records)
+            # Perform bulk insert using PostgreSQL ON CONFLICT DO NOTHING to avoid duplicate key failures
+            from sqlalchemy.dialects.postgresql import insert as pg_insert
+            stmt = pg_insert(pg_table).values(records)
+            primary_keys = [c.name for c in pg_table.primary_key.columns]
+            if primary_keys:
+                stmt = stmt.on_conflict_do_nothing(index_elements=primary_keys)
+            else:
+                stmt = stmt.on_conflict_do_nothing()
+            
+            pg_conn.execute(stmt)
+
             
             stats["migrated_tables"] += 1
             stats["total_records_inserted"] += len(records)
